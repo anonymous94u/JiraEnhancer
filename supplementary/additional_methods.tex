@@ -1,0 +1,489 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,booktabs,array,tabularx,placeins,microtype,graphicx,rotating,pdflscape,float}
+\usepackage[ruled,vlined,linesnumbered,longend]{algorithm2e}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+\providecommand{\Description}[1]{}
+\providecommand{\bibinfo}[2]{#2}
+\providecommand{\DOIprefix}{doi:}
+\providecommand{\URLprefix}{URL: }
+\providecommand{\ArXivprefix}{arXiv:}
+\providecommand{\Pubmedprefix}{pmid:}
+\providecommand{\doi}[1]{\href{https://doi.org/#1}{\nolinkurl{#1}}}
+\pdfinfoomitdate=1
+\pdftrailerid{}
+\raggedbottom
+\emergencystretch=1.5em
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\theequation}{S\arabic{equation}}
+\renewcommand{\thealgocf}{S\arabic{algocf}}
+\hypersetup{pdfauthor={Anonymous authors},pdftitle={Jira Enhancer: Supplementary Methods and Related Work},pdfsubject={Related-work comparison, workflow details, and decomposition procedure}}
+\begin{document}
+\begin{landscape}
+\begin{center}
+\Large Jira Enhancer: Supplementary Methods and Related Work\\[0.4em]
+\normalsize Anonymous authors
+\end{center}
+\section{Related-work comparison}
+\begin{table}[H]
+\centering
+\setlength{\tabcolsep}{4pt}
+\small
+\caption{Comparison of the main paradigms discussed in the background and related work: representative strengths, enterprise-planning limitations, and the position of Jira Enhancer (B3) relative to B0/B1/B2.}
+\label{tab:related-work-comparative}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.18\linewidth}>{\raggedright\arraybackslash}p{0.20\linewidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Paradigm & Representative prior work & Typical strength & Common constraint in enterprise planning & Position of B0/B1/B2/B3 \\
+\midrule
+Template/rule decomposition & RE standards, agile requirements, and user-story quality work \citep{R52,R62,R63} & High consistency and stable formatting & Little ability to adapt to ambiguous epics; poor semantic understanding of unfamiliar situations & B0 and B1 are closest relatives of this family; B3 retains its structure but adds adaptive semantic reasoning \\
+Generic LLM drafting & Prompt-driven generation, code assistants, and reasoning methods \citep{R1,R14,R59,R77} & natural-language drafts and broad transfer between tasks & Fluency, but lack of structure; confidence is uncoupled from mutation authority & B2 is closest relative of this family; B3 adds critic loops, validators and governance coupling \\
+Retrieval-augmented generation & Retrieval-augmented and dense-retrieval methods \citep{R3,R5,R22} & Strong evidence base for grounding and factual memory recall & Varying retrieval quality; context-packing is not well defined for workflow-mutation situations & B3 converts retrieval into operation through ranking of context packets and explicit tracking of missing signals \\
+Agent/tool orchestration & Tool-use methods and agent benchmarks \citep{R17,R27,R28,R92} & Strong multi-step execution ability and coordination with external systems & Inconsistent run-time behavior and risk of harm \citep{R87} when there is no deterministic bound on mutation & B3 constrains execution using policy-gated, hash-checked and idempotent write-back \\
+Trust \citep{R76}, confidence controls, governance & Alignment, human-AI collaboration, automation-trust, and socio-technical SE studies \citep{R13,R57,R75,R58} & Facilitates control and accountability \citep{R56} & Typically investigated in settings away from issue-tracker mutation & B3 directly implements this layer in Jira using human approval and policy gates \\
+\bottomrule
+\end{tabularx}
+\end{table}
+\end{landscape}
+\section{API and UI Console Workflow}\label{sec:workflow-ui}
+
+\subsection{Workflow API}
+The workflow has two tasks: enriching existing Jira items and breaking epics into candidate stories. Drafting, human review, and changes to Jira are separate steps. A run can cover an issue, sprint, epic, or release. Reviewers can check the run status and each item's draft, evidence, warnings, readiness, confidence, policy state, and prompt-selection details before making a decision.
+
+For one item or the whole run, reviewers can approve, reject, request a new draft, suggest a change, or provide an instruction for further revision. Suggestions and reviewer-written instructions return to the reasoning process to produce a revised draft. If the system asks a question, the reviewer's answer continues the revision. Writing an approved item back to Jira is a separate action, allowed only after policy, validation, source-conflict, and retry checks. When several items are written together, each keeps its own result and reason for success, a block, a conflict, or a repeated request.
+
+To break down an epic, the system reads the epic, existing child stories, and available evidence. It returns editable candidates with readiness, confidence, threshold status, warnings, and evidence references, without creating Jira stories. The creation step takes the reviewed story data, checks confidence and approval, skips matching existing summaries, and tries to create the remaining stories. It lists created and skipped items, with reasons for duplicates and creation failures. Reviewers and controlled software clients use the same API rules and governance checks throughout inspection, guidance, revision, approval, and writeback.
+
+\subsection{Console Workflow}
+The console has three connected views. The enrichment view starts a run and shows each draft with its evidence, warnings, readiness, confidence, and selected prompt. The review view provides the approval and revision actions, including suggestions and Jira-specific prompts, for one item or the whole run. The Epic Story Breakdown view takes epic and project keys, requests story suggestions, and shows editable, structured story data with an \texttt{approved} flag for each story. Reviewers can edit content, add missing context, or provide a new prompt before using a separate action to create approved stories that pass the required checks. A revision request does not authorize a change to Jira.
+
+Reviewers read the stories and assess their risks through the console. Controlled agents and automated workflows use the same API with fixed rules for the submitted data. This supports integration with release-planning bots, PM dashboards, and governance data lakes under the same controls. The console shows the sources behind confidence scores, warnings, policy reason codes, approval records, duplicate-skip reasons, and story selections kept for retry. These displays are intended to help reviewers interpret confidence and choose whether to accept, reject, or retry. Their effect on live console decisions was not measured in the artifact study. The design seeks appropriate trust rather than maximum automation, reflecting evidence that human--AI team performance depends on users' understanding of system behavior \citep{R56,R57,R76}.
+
+\subsection{Evidence Availability and Recovery}\label{sec:evidence-recovery}
+
+The system classifies warning codes, such as external authentication requirements and MCP unavailability, and propagates them to run- and story-level review records. This supports graceful degradation:
+\begin{equation}
+\texttt{service\_mode} \in \{\texttt{full-context},\texttt{reduced-context}\}.
+\end{equation}
+\textit{Full-context} mode is used for cases with external evidence; \textit{reduced-context} mode is applied when only issue-local evidence is available.
+
+\textit{Reduced-context} mode is designed to remain useful instead of failing softly. It still provides structured drafts and warning metadata, which allows reviews to continue in an informed way.
+
+In reliability engineering, the ``graceful capability collapse'' pattern is applied instead of binary failure. For example, if a high-value evidence source such as Confluence is offline, the system retains decomposition capability by using the available issue records and marking the missing evidence categories. Available issue records prevent planning deadlock, while metadata preservation maintains the meaning of the confidence score.
+
+Transient failures are retried using exponential backoff and jitter, while terminal errors are reported with machine-actionable error codes. The technique allows for automatic retry management at the orchestration layer without hiding permanent integration issues.
+
+The user-guided workflow maintains collaboration context through the stages in case of failures. If the story creation fails or times out, then the selected stories will still be present in the console. User will be able to look at the partial generation results in Jira and continue working on them without having to regenerate the decision set. Such capability is important for human--AI cooperation since recovery should not be limited to backend functionality but should be visible for a human making retry, change, or cancel decisions.
+
+
+\FloatBarrier
+\section{System Architecture}
+Figure 1(a) and Figure 1(b) refer to the architecture panels in the main manuscript.
+
+Figure~1(a) presents the complete system architecture, showing how the LLM, RL-guided prompt-selection layer, and human-governance mechanisms interact to address the software-engineering and requirements-engineering challenges discussed above. The subsequent sections explain the main architectural components in greater detail.
+
+
+
+
+
+\subsection{Reading the architecture figures.} The set of Figures~1(a) and~1(b) and \href{https://github.com/anonymous94u/JiraEnhancer/blob/main/supplementary/module_architecture.pdf}{Supplementary Figure S1} provides three perspectives: architecture and trust boundaries, operational sequence, and internal decomposition of agents. The deliberate overlap helps to conduct separate reviews of completeness of the architecture, correctness of the execution, and responsibilities of agents. Crucially, the interface junctions and directional arrows mapped across these graphics represent strict, programmatically enforced API contracts. System components interact across boundaries through rigid REST and schema serialization layers, ensuring that data handoffs are deterministically bound rather than relying on fluid text validation.
+
+\paragraph{Figure 1(a): system architecture overview.}
+Figure~1(a) places Jira epics, stories, and writeback targets; Confluence requirements and design evidence; and Bitbucket code and review signals outside the AI boundary. Inside Jira Enhancer, the review console, orchestrator, semantic enrichment engine, RL policy, governance layer, event store, and conflict-safe writer transform evidence into candidate stories. The architecture clearly separates AI reasoning from changes to Jira. The enrichment and RL components can generate, evaluate, and improve a candidate story, but they cannot update Jira directly. A candidate can be written to Jira only after it passes validation and the confidence threshold, complies with the relevant policies, and receives human approval.
+
+\paragraph{Figure 1(b): execution/control flow.}
+Figure~1(b) displays the components in execution order. A run gathers Jira context and acquires requirement, design, code, and review signals. The orchestrator first makes a workflow entry and selects a permitted prompt strategy. Then, it generates and scores candidate stories, applies the policies, and logs all the steps. Only successful candidates may be written to Jira. Each arrow in the diagram depicts a clearly defined handoff from one component to another, which includes preparing inputs, logging the selection of prompts, candidate scoring, logging the policies applied, and validation of writing back to Jira. Before writing to Jira, the system ensures there are no conflicting edits, safe retries (idempotency), and duplicated stories. Otherwise, the item is left in review, refinement, conflict, or failure state without Jira being updated.
+
+Supplementary Figure S1 describes the four modules for story enhancement, epic-to-story decomposition, prompt generation, and RL-based prompt selection.
+
+The captions in Figures~1(a) and~1(b) represent executable contracts. Context and Code Retrieve normalize the inputs, Human Actions captures the reviewer’s intention, while selecting and generating safe-arms leads to scoring of candidates; Policy Check determines confidence, role, validation, and approval; Persist trace records state, results, and evidence links. Approved creation reaches controlled writeback only after the source hash, idempotency, duplicate, and target checks. The safety boundary is hence determined by this rule rather than fluency of text.
+
+
+\FloatBarrier
+\section{Traceable Data Records}
+Every run captures scope, requester, time stamps, and idempotency information along with item state, confidence, readiness, policy flags, structured drafts, references to external evidence, decisions and notes on approval, and before/after writeback hashes. Since each piece of information is a first class record, the planning decision behind it may be subsequently reconstructed for empirical evaluation~\citep{R70,R54}, auditing~\citep{R93}, or incident analysis. Immutable event streams maintain event ordering, whereas mutable snapshots facilitate low-latency querying. Informational warnings alert about non-critical deficiencies, advisory warnings bring problems to reviewer attention, and blocking warnings stop mutation until the issue gets fixed.
+
+
+\FloatBarrier
+\clearpage
+\section{Epic-to-Story Decomposition Method}
+
+
+\subsection{Candidate Generation}
+By leveraging epic context and previous stories, the system can produce any required capability archetypes:
+\begin{itemize}
+  \item UI/interaction story,
+  \item API/contract story,
+  \item persistence/writeback story,
+  \item validation/regression story.
+\end{itemize}
+
+This system rejects the archetypes that are already covered in existing summaries via lexical and semantic matching.
+
+This helps avoid the common error of ``story inflation,'' where assistants create tickets that differ in wording but cover the same work.
+
+In the current implementation, the system recognizes any embedded epic description as a first-class piece of evidence. When an epic is filled with design signals such as solution-design headings, scaling, formulas, APIs and workflows, validation, roll-back considerations, and testing considerations, the system will output a \texttt{jira\_embedded\_context} piece of evidence. This makes the decomposition resilient to the common enterprise challenge where Confluence links are unavailable at the time of execution, while the epic still contains enough design information for bounded planning. In case when the epic has only links and those links are not available, the system avoids the generation of any placeholders and returns the context unavailability message.
+
+\subsection{Story Point Assignment}
+Initial estimates are derived from complexity priors:
+\begin{equation}
+\mathrm{SP}(s) = f(\xi_{\text{scope}}, \xi_{\text{integration}}, \xi_{\text{risk}}, \xi_{\text{unknown}}),
+\end{equation}
+with the four $\xi$ factors representing normalized priors for the complexity of scope, integration, risk, and uncertainty. The resulting measure is categorized using Fibonacci-like buckets of 3, 5, and 8. In the current implementation, the default values are deterministic (3/5) and may be learned in future implementations.
+
+Deterministic baseline is an intended choice. It guarantees consistent behavior in initial phases of use and avoids estimation variability until there is enough history to learn from. It also represents a conservative approach to evaluation whereby the value brought in by automation is compared with deterministic baseline performance before applying any other estimation techniques.
+
+\subsection{Iterative Enrichment}
+For each candidate story $s$:
+\begin{enumerate}
+  \item run semantic analysis,
+  \item calculate readiness/confidence,
+  \item if $C(s)<\tau_c$, provide guidance and repeat the enrichment process within a bounded attempt budget,
+  \item provide a structured story payload.
+\end{enumerate}
+
+Enrichment increases as each iteration brings explicit feedback from reviewers, such as missed edge cases, unresolved dependencies, or ambiguous non-functional requirements. Thus, the refinement process becomes a collaboration, not just prompting. The distinction is important for successful interaction between human and AI \citep{R56,R57}.
+
+Moreover, in one embodiment, the output of the enrichment process follows a canonical, strongly typed schema:
+\texttt{problem\_statement}, \texttt{actor\_value}, \texttt{functional\_scope}, \texttt{nfr\_constraints}, \texttt{acceptance\_criteria},
+\texttt{dependency\_map}, \texttt{risk\_register}, and \texttt{test\_considerations}. The high degree of typing ensures interoperability of the result with tools for reviews, analytics, and policies and removes ambiguity caused by the informal nature of the free-form text.
+
+An analysis of coverage on the epic level can be done through the capability matrix. Its rows correspond to the capability dimensions such as UI, API, data, observability, resiliency, and security, while its columns represent the suggested stories. The system is able to detect undercovered dimensions and generate candidate stories accordingly. It alters the decomposition process from merely generative to constrained generation with clear objectives.
+
+\subsection{Ablation Execution Algorithm}
+Algorithm~\ref{alg:ablation-exec} specifies the execution-mode schema and common scorecard for the four baseline definitions. Each mode activates its listed components and returns quality, efficiency, governance, composite, and assessment-time fields.
+
+\begin{algorithm*}[t]
+\DontPrintSemicolon
+\footnotesize
+\caption{Ablation-Mode Execution for B0/B1/B2/B3 Comparison}
+\label{alg:ablation-exec}
+\KwIn{Epic unit $E_u$, mode $m \in \{\mathrm{B0},\mathrm{B1},\mathrm{B2},\mathrm{B3}\}$}
+\KwOut{Metric row $(Q_m,\mathrm{Eff}_m,G_m,\mathrm{Composite}_m,\mathrm{Time}_m)$}
+\tcp{Apply the selected mode's component schema.}
+\eIf{$m=\mathrm{B0}$}{
+  ExecuteManualReferenceCore$(E_u)$\; \tcp*[r]{Independent manual package required}
+}{
+  ExecuteTemplateCore$(E_u)$ if $m=\mathrm{B1}$\;
+  ExecuteGenericLLMCore$(E_u)$ if $m=\mathrm{B2}$\;
+  ExecuteFullJiraEnhancerCore$(E_u)$ if $m=\mathrm{B3}$\;
+}
+\tcp{Disable B3-only components in baseline modes.}
+\If{$m\neq\mathrm{B3}$}{
+  Disable components excluded from mode $m$ (critic loop / context packer / validator / governed writeback)\;
+}
+\tcp{Use one scorer; each row retains its measured or analytical status.}
+Collect metrics using the same scorer and schema across all modes\;
+Compute $Q_m$ (quality), $\mathrm{Eff}_m$ (efficiency), $G_m$ (governance), $\mathrm{Composite}_m$, and $\mathrm{Time}_m$\;
+\Return{$(Q_m,\mathrm{Eff}_m,G_m,\mathrm{Composite}_m,\mathrm{Time}_m)$}\;
+\end{algorithm*}
+
+
+\FloatBarrier
+\begin{thebibliography}{24}
+\bibitem[{Lucassen et~al.(2016)Lucassen, Dalpiaz, van~der Werf, and
+  Brinkkemper}]{R52}
+\bibinfo{author}{G.~Lucassen}, \bibinfo{author}{F.~Dalpiaz},
+  \bibinfo{author}{J.~M. E.~M. van~der Werf}, \bibinfo{author}{S.~Brinkkemper},
+\newblock \bibinfo{title}{Improving agile requirements: The quality user story
+  framework and tool},
+\newblock \bibinfo{journal}{Requirements Engineering} \bibinfo{volume}{21}
+  (\bibinfo{year}{2016}) \bibinfo{pages}{383--403}.
+%Type = Article
+\bibitem[{{ISO/IEC/IEEE}(2018)}]{R62}
+\bibinfo{author}{{ISO/IEC/IEEE}}, \bibinfo{title}{ISO/IEC/IEEE 29148:2018
+  Systems and Software Engineering---Life Cycle Processes---Requirements
+  Engineering}, \bibinfo{organization}{ISO/IEC/IEEE}, \bibinfo{year}{2018}.
+%Type = Inproceedings
+\bibitem[{Cao and Ramesh(2008)}]{R63}
+\bibinfo{author}{L.~Cao}, \bibinfo{author}{B.~Ramesh},
+\newblock \bibinfo{title}{Agile requirements engineering practices: An
+  empirical study},
+\newblock \bibinfo{journal}{IEEE Software} \bibinfo{volume}{25}
+  (\bibinfo{year}{2008}) \bibinfo{pages}{60--67}.
+%Type = Article
+\bibitem[{Brown et~al.(2020)Brown, Mann, Ryder, Subbiah, Kaplan, Dhariwal,
+  Neelakantan, Shyam, Sastry, Askell, Agarwal, Herbert-Voss, Krueger, Henighan,
+  Child, Ramesh, Ziegler, Wu, Winter, Hesse, Chen, Sigler, Litwin, Gray, Chess,
+  Clark, Berner, McCandlish, Radford, Sutskever, and Amodei}]{R1}
+\bibinfo{author}{T.~B. Brown}, \bibinfo{author}{B.~Mann},
+  \bibinfo{author}{N.~Ryder}, \bibinfo{author}{M.~Subbiah},
+  \bibinfo{author}{J.~Kaplan}, \bibinfo{author}{P.~Dhariwal},
+  \bibinfo{author}{A.~Neelakantan}, \bibinfo{author}{P.~Shyam},
+  \bibinfo{author}{G.~Sastry}, \bibinfo{author}{A.~Askell},
+  \bibinfo{author}{S.~Agarwal}, \bibinfo{author}{A.~Herbert-Voss},
+  \bibinfo{author}{G.~Krueger}, \bibinfo{author}{T.~Henighan},
+  \bibinfo{author}{R.~Child}, \bibinfo{author}{A.~Ramesh},
+  \bibinfo{author}{D.~Ziegler}, \bibinfo{author}{J.~Wu},
+  \bibinfo{author}{C.~Winter}, \bibinfo{author}{C.~Hesse},
+  \bibinfo{author}{M.~Chen}, \bibinfo{author}{E.~Sigler},
+  \bibinfo{author}{M.~Litwin}, \bibinfo{author}{S.~Gray},
+  \bibinfo{author}{B.~Chess}, \bibinfo{author}{J.~Clark},
+  \bibinfo{author}{C.~Berner}, \bibinfo{author}{S.~McCandlish},
+  \bibinfo{author}{A.~Radford}, \bibinfo{author}{I.~Sutskever},
+  \bibinfo{author}{D.~Amodei},
+\newblock \bibinfo{title}{Language models are few-shot learners},
+\newblock in: \bibinfo{booktitle}{Advances in Neural Information Processing
+  Systems (NeurIPS)}, volume~\bibinfo{volume}{33}, \bibinfo{publisher}{Curran
+  Associates, Inc.}, \bibinfo{address}{Red Hook, NY, USA},
+  \bibinfo{year}{2020}, pp. \bibinfo{pages}{1877--1901}.
+%Type = Inproceedings
+\bibitem[{Wei et~al.(2022)Wei, Wang, Schuurmans, Bosma, Ichter, Xia, Chi, Le,
+  and Zhou}]{R14}
+\bibinfo{author}{J.~Wei}, \bibinfo{author}{X.~Wang},
+  \bibinfo{author}{D.~Schuurmans}, \bibinfo{author}{M.~Bosma},
+  \bibinfo{author}{B.~Ichter}, \bibinfo{author}{F.~Xia},
+  \bibinfo{author}{E.~Chi}, \bibinfo{author}{Q.~V. Le},
+  \bibinfo{author}{D.~Zhou},
+\newblock \bibinfo{title}{Chain-of-thought prompting elicits reasoning in large
+  language models},
+\newblock in: \bibinfo{booktitle}{Advances in Neural Information Processing
+  Systems (NeurIPS)}, volume~\bibinfo{volume}{35}, \bibinfo{publisher}{Curran
+  Associates, Inc.}, \bibinfo{address}{Red Hook, NY, USA},
+  \bibinfo{year}{2022}, pp. \bibinfo{pages}{24824--24837}.
+  \DOIprefix\doi{10.52202/068431-1800}.
+%Type = Inproceedings
+\bibitem[{Fan et~al.(2023)Fan, Gokkaya, Harman, Lyubarskiy, Sengupta, Yoo, and
+  Zhang}]{R59}
+\bibinfo{author}{A.~Fan}, \bibinfo{author}{B.~Gokkaya},
+  \bibinfo{author}{M.~Harman}, \bibinfo{author}{M.~Lyubarskiy},
+  \bibinfo{author}{S.~Sengupta}, \bibinfo{author}{S.~Yoo},
+  \bibinfo{author}{J.~M. Zhang},
+\newblock \bibinfo{title}{Large language models for software engineering:
+  Survey and open problems},
+\newblock in: \bibinfo{booktitle}{2023 IEEE/ACM International Conference on
+  Software Engineering: Future of Software Engineering (ICSE-FoSE)},
+  \bibinfo{publisher}{IEEE}, \bibinfo{address}{Melbourne, Australia},
+  \bibinfo{year}{2023}, pp. \bibinfo{pages}{31--53}.
+  \DOIprefix\doi{10.1109/ICSE-FoSE59343.2023.00008}.
+%Type = Inproceedings
+\bibitem[{Barke et~al.(2023)Barke, James, and Polikarpova}]{R77}
+\bibinfo{author}{S.~Barke}, \bibinfo{author}{M.~B. James},
+  \bibinfo{author}{N.~Polikarpova},
+\newblock \bibinfo{title}{Grounded copilot: How programmers interact with
+  code-generating models},
+\newblock \bibinfo{journal}{Proceedings of the ACM on Programming Languages}
+  \bibinfo{volume}{7} (\bibinfo{year}{2023}) \bibinfo{pages}{85--111}.
+%Type = Inproceedings
+\bibitem[{Lewis et~al.(2020)Lewis, Perez, Piktus, Petroni, Karpukhin, Goyal,
+  K{\"u}ttler, Lewis, Yih, Rockt{\"a}schel, Riedel, and Kiela}]{R3}
+\bibinfo{author}{P.~Lewis}, \bibinfo{author}{E.~Perez},
+  \bibinfo{author}{A.~Piktus}, \bibinfo{author}{F.~Petroni},
+  \bibinfo{author}{V.~Karpukhin}, \bibinfo{author}{N.~Goyal},
+  \bibinfo{author}{H.~K{\"u}ttler}, \bibinfo{author}{M.~Lewis},
+  \bibinfo{author}{W.-t. Yih}, \bibinfo{author}{T.~Rockt{\"a}schel},
+  \bibinfo{author}{S.~Riedel}, \bibinfo{author}{D.~Kiela},
+\newblock \bibinfo{title}{Retrieval-augmented generation for
+  knowledge-intensive nlp tasks},
+\newblock in: \bibinfo{booktitle}{Advances in Neural Information Processing
+  Systems (NeurIPS)}, volume~\bibinfo{volume}{33}, \bibinfo{publisher}{Curran
+  Associates, Inc.}, \bibinfo{address}{Red Hook, NY, USA},
+  \bibinfo{year}{2020}, pp. \bibinfo{pages}{9459--9474}.
+%Type = Inproceedings
+\bibitem[{Karpukhin et~al.(2020)Karpukhin, Oguz, Min, Lewis, Wu, Edunov, Chen,
+  and Yih}]{R5}
+\bibinfo{author}{V.~Karpukhin}, \bibinfo{author}{B.~Oguz},
+  \bibinfo{author}{S.~Min}, \bibinfo{author}{P.~Lewis},
+  \bibinfo{author}{L.~Wu}, \bibinfo{author}{S.~Edunov},
+  \bibinfo{author}{D.~Chen}, \bibinfo{author}{W.-t. Yih},
+\newblock \bibinfo{title}{Dense passage retrieval for open-domain question
+  answering},
+\newblock in: \bibinfo{booktitle}{Proceedings of the 2020 Conference on
+  Empirical Methods in Natural Language Processing (EMNLP)},
+  \bibinfo{publisher}{Association for Computational Linguistics},
+  \bibinfo{address}{Online}, \bibinfo{year}{2020}, pp.
+  \bibinfo{pages}{6769--6781}. \URLprefix
+  \url{https://aclanthology.org/2020.emnlp-main.550/}.
+  \DOIprefix\doi{10.18653/v1/2020.emnlp-main.550}.
+%Type = Inproceedings
+\bibitem[{Asai et~al.(2024)Asai, Min, Zhong, Chen, Hajishirzi, Yih, Choi,
+  Lewis, and Zettlemoyer}]{R22}
+\bibinfo{author}{A.~Asai}, \bibinfo{author}{S.~Min},
+  \bibinfo{author}{Z.~Zhong}, \bibinfo{author}{D.~Chen},
+  \bibinfo{author}{H.~Hajishirzi}, \bibinfo{author}{W.-t. Yih},
+  \bibinfo{author}{Y.~Choi}, \bibinfo{author}{M.~Lewis},
+  \bibinfo{author}{L.~Zettlemoyer},
+\newblock \bibinfo{title}{Self-rag: Learning to retrieve, generate, and
+  critique through self-reflection},
+\newblock in: \bibinfo{booktitle}{International Conference on Learning
+  Representations (ICLR)}, \bibinfo{publisher}{OpenReview.net},
+  \bibinfo{address}{Vienna, Austria}, \bibinfo{year}{2024}.
+%Type = Inproceedings
+\bibitem[{Schick et~al.(2023)Schick, Dwivedi-Yu, Dess{\`i}, Raileanu, Lomeli,
+  Hambro, Zettlemoyer, Cancedda, and Scialom}]{R17}
+\bibinfo{author}{T.~Schick}, \bibinfo{author}{J.~Dwivedi-Yu},
+  \bibinfo{author}{R.~Dess{\`i}}, \bibinfo{author}{R.~Raileanu},
+  \bibinfo{author}{M.~Lomeli}, \bibinfo{author}{E.~Hambro},
+  \bibinfo{author}{L.~Zettlemoyer}, \bibinfo{author}{N.~Cancedda},
+  \bibinfo{author}{T.~Scialom},
+\newblock \bibinfo{title}{Toolformer: Language models can teach themselves to
+  use tools},
+\newblock in: \bibinfo{booktitle}{Advances in Neural Information Processing
+  Systems (NeurIPS)}, volume~\bibinfo{volume}{36}, \bibinfo{publisher}{Curran
+  Associates, Inc.}, \bibinfo{address}{Red Hook, NY, USA},
+  \bibinfo{year}{2023}, pp. \bibinfo{pages}{68539--68551}.
+  \DOIprefix\doi{10.52202/075280-2997}.
+%Type = Inproceedings
+\bibitem[{Liu et~al.(2024)Liu, Yu, Zhang, Xu, Lei, Lai, Gu, Ding, Men, Yang,
+  Zhang, Deng, Zeng, Du, Zhang, Shen, Zhang, Su, Sun, Huang, Dong, and
+  Tang}]{R27}
+\bibinfo{author}{X.~Liu}, \bibinfo{author}{H.~Yu}, \bibinfo{author}{H.~Zhang},
+  \bibinfo{author}{Y.~Xu}, \bibinfo{author}{X.~Lei}, \bibinfo{author}{H.~Lai},
+  \bibinfo{author}{Y.~Gu}, \bibinfo{author}{H.~Ding}, \bibinfo{author}{K.~Men},
+  \bibinfo{author}{K.~Yang}, \bibinfo{author}{S.~Zhang},
+  \bibinfo{author}{X.~Deng}, \bibinfo{author}{A.~Zeng},
+  \bibinfo{author}{Z.~Du}, \bibinfo{author}{C.~Zhang},
+  \bibinfo{author}{S.~Shen}, \bibinfo{author}{T.~Zhang},
+  \bibinfo{author}{Y.~Su}, \bibinfo{author}{H.~Sun},
+  \bibinfo{author}{M.~Huang}, \bibinfo{author}{Y.~Dong},
+  \bibinfo{author}{J.~Tang},
+\newblock \bibinfo{title}{Agentbench: Evaluating llms as agents},
+\newblock in: \bibinfo{booktitle}{The Twelfth International Conference on
+  Learning Representations}, \bibinfo{publisher}{OpenReview.net},
+  \bibinfo{address}{Vienna, Austria}, \bibinfo{year}{2024}. \URLprefix
+  \url{https://openreview.net/forum?id=zAdUB0aCTQ}.
+%Type = Inproceedings
+\bibitem[{Wu et~al.(2024)Wu, Bansal, Zhang, Wu, Li, Zhu, Jiang, Zhang, Zhang,
+  Liu, Awadallah, White, Burger, and Wang}]{R28}
+\bibinfo{author}{Q.~Wu}, \bibinfo{author}{G.~Bansal},
+  \bibinfo{author}{J.~Zhang}, \bibinfo{author}{Y.~Wu}, \bibinfo{author}{B.~Li},
+  \bibinfo{author}{E.~Zhu}, \bibinfo{author}{L.~Jiang},
+  \bibinfo{author}{X.~Zhang}, \bibinfo{author}{S.~Zhang},
+  \bibinfo{author}{J.~Liu}, \bibinfo{author}{A.~H. Awadallah},
+  \bibinfo{author}{R.~W. White}, \bibinfo{author}{D.~Burger},
+  \bibinfo{author}{C.~Wang},
+\newblock \bibinfo{title}{Autogen: Enabling next-gen llm applications via
+  multi-agent conversations},
+\newblock in: \bibinfo{booktitle}{Conference on Language Modeling (COLM)},
+  \bibinfo{publisher}{OpenReview.net}, \bibinfo{address}{Philadelphia, PA,
+  USA}, \bibinfo{year}{2024}. \URLprefix
+  \url{https://openreview.net/forum?id=BAakY1hNKS}.
+%Type = Inproceedings
+\bibitem[{Lu et~al.(2025)Lu, Holleis, Zhang, Aumayer, Nan, Bai, Ma, Ma, Li,
+  Yin, Wang, and Pang}]{R92}
+\bibinfo{author}{J.~Lu}, \bibinfo{author}{T.~Holleis},
+  \bibinfo{author}{Y.~Zhang}, \bibinfo{author}{B.~Aumayer},
+  \bibinfo{author}{F.~Nan}, \bibinfo{author}{H.~Bai}, \bibinfo{author}{S.~Ma},
+  \bibinfo{author}{S.~Ma}, \bibinfo{author}{M.~Li}, \bibinfo{author}{G.~Yin},
+  \bibinfo{author}{Z.~Wang}, \bibinfo{author}{R.~Pang},
+\newblock \bibinfo{title}{Toolsandbox: A stateful, conversational, interactive
+  evaluation benchmark for llm tool use capabilities},
+\newblock in: \bibinfo{booktitle}{Findings of the Association for Computational
+  Linguistics: NAACL 2025}, \bibinfo{publisher}{Association for Computational
+  Linguistics}, \bibinfo{address}{Albuquerque, New Mexico},
+  \bibinfo{year}{2025}, pp. \bibinfo{pages}{1160--1183}.
+  \DOIprefix\doi{10.18653/v1/2025.findings-naacl.65}.
+%Type = Inproceedings
+\bibitem[{Ruan et~al.(2024)Ruan, Dong, Wang, Pitis, Zhou, Ba, Dubois, Maddison,
+  and Hashimoto}]{R87}
+\bibinfo{author}{Y.~Ruan}, \bibinfo{author}{H.~Dong},
+  \bibinfo{author}{A.~Wang}, \bibinfo{author}{S.~Pitis},
+  \bibinfo{author}{Y.~Zhou}, \bibinfo{author}{J.~Ba},
+  \bibinfo{author}{Y.~Dubois}, \bibinfo{author}{C.~J. Maddison},
+  \bibinfo{author}{T.~Hashimoto},
+\newblock \bibinfo{title}{Identifying the risks of lm agents with an
+  lm-emulated sandbox},
+\newblock in: \bibinfo{booktitle}{The Twelfth International Conference on
+  Learning Representations}, \bibinfo{publisher}{OpenReview.net},
+  \bibinfo{address}{Vienna, Austria}, \bibinfo{year}{2024}. \URLprefix
+  \url{https://openreview.net/forum?id=GEcwtMk1uA}.
+%Type = Article
+\bibitem[{Lee and See(2004)}]{R76}
+\bibinfo{author}{J.~D. Lee}, \bibinfo{author}{K.~A. See},
+\newblock \bibinfo{title}{Trust in automation: Designing for appropriate
+  reliance},
+\newblock \bibinfo{journal}{Human Factors} \bibinfo{volume}{46}
+  (\bibinfo{year}{2004}) \bibinfo{pages}{50--80}.
+%Type = Article
+\bibitem[{Ouyang et~al.(2022)Ouyang, Wu, Jiang, Almeida, Wainwright, Mishkin,
+  Zhang, Agarwal, Slama, Ray, Schulman, Hilton, Kelton, Miller, Simens, Askell,
+  Welinder, Christiano, Leike, and Lowe}]{R13}
+\bibinfo{author}{L.~Ouyang}, \bibinfo{author}{J.~Wu},
+  \bibinfo{author}{X.~Jiang}, \bibinfo{author}{D.~Almeida},
+  \bibinfo{author}{C.~Wainwright}, \bibinfo{author}{P.~Mishkin},
+  \bibinfo{author}{C.~Zhang}, \bibinfo{author}{S.~Agarwal},
+  \bibinfo{author}{K.~Slama}, \bibinfo{author}{A.~Ray},
+  \bibinfo{author}{J.~Schulman}, \bibinfo{author}{J.~Hilton},
+  \bibinfo{author}{F.~Kelton}, \bibinfo{author}{L.~Miller},
+  \bibinfo{author}{M.~Simens}, \bibinfo{author}{A.~Askell},
+  \bibinfo{author}{P.~Welinder}, \bibinfo{author}{P.~F. Christiano},
+  \bibinfo{author}{J.~Leike}, \bibinfo{author}{R.~Lowe},
+\newblock \bibinfo{title}{Training language models to follow instructions with
+  human feedback},
+\newblock in: \bibinfo{booktitle}{Advances in Neural Information Processing
+  Systems (NeurIPS)}, volume~\bibinfo{volume}{35}, \bibinfo{publisher}{Curran
+  Associates, Inc.}, \bibinfo{address}{Red Hook, NY, USA},
+  \bibinfo{year}{2022}, pp. \bibinfo{pages}{27730--27744}.
+  \DOIprefix\doi{10.52202/068431-2011}.
+%Type = Inproceedings
+\bibitem[{Bansal et~al.(2019)Bansal, Nushi, Kamar, Lasecki, Weld, and
+  Horvitz}]{R57}
+\bibinfo{author}{G.~Bansal}, \bibinfo{author}{B.~Nushi},
+  \bibinfo{author}{E.~Kamar}, \bibinfo{author}{W.~S. Lasecki},
+  \bibinfo{author}{D.~S. Weld}, \bibinfo{author}{E.~Horvitz},
+\newblock \bibinfo{title}{Beyond accuracy: The role of mental models in
+  human-ai team performance},
+\newblock in: \bibinfo{booktitle}{Proceedings of the AAAI Conference on Human
+  Computation and Crowdsourcing}, \bibinfo{publisher}{AAAI Press},
+  \bibinfo{address}{Palo Alto, CA, USA}, \bibinfo{year}{2019}, pp.
+  \bibinfo{pages}{2--11}.
+%Type = Article
+\bibitem[{Parasuraman et~al.(2000)Parasuraman, Sheridan, and Wickens}]{R75}
+\bibinfo{author}{R.~Parasuraman}, \bibinfo{author}{T.~B. Sheridan},
+  \bibinfo{author}{C.~D. Wickens},
+\newblock \bibinfo{title}{A model for types and levels of human interaction
+  with automation},
+\newblock \bibinfo{journal}{IEEE Transactions on Systems, Man, and Cybernetics
+  - Part A: Systems and Humans} \bibinfo{volume}{30} (\bibinfo{year}{2000})
+  \bibinfo{pages}{286--297}.
+%Type = Inproceedings
+\bibitem[{Storey et~al.(2020)Storey, Ernst, Williams, and Kalliamvakou}]{R58}
+\bibinfo{author}{M.-A. Storey}, \bibinfo{author}{N.~A. Ernst},
+  \bibinfo{author}{C.~Williams}, \bibinfo{author}{E.~Kalliamvakou},
+\newblock \bibinfo{title}{The who, what, how of software engineering research:
+  A socio-technical framework},
+\newblock \bibinfo{journal}{Empirical Software Engineering}
+  \bibinfo{volume}{25} (\bibinfo{year}{2020}) \bibinfo{pages}{4097--4129}.
+%Type = Article
+\bibitem[{Amershi et~al.(2019)Amershi, Weld, Vorvoreanu, Fourney, Nushi,
+  Collisson, Suh, Iqbal, Bennett, Inkpen, Teevan, Kikin-Gil, and Horvitz}]{R56}
+\bibinfo{author}{S.~Amershi}, \bibinfo{author}{D.~Weld},
+  \bibinfo{author}{M.~Vorvoreanu}, \bibinfo{author}{A.~Fourney},
+  \bibinfo{author}{B.~Nushi}, \bibinfo{author}{P.~Collisson},
+  \bibinfo{author}{J.~Suh}, \bibinfo{author}{S.~Iqbal}, \bibinfo{author}{P.~N.
+  Bennett}, \bibinfo{author}{K.~Inkpen}, \bibinfo{author}{J.~Teevan},
+  \bibinfo{author}{R.~Kikin-Gil}, \bibinfo{author}{E.~Horvitz},
+\newblock \bibinfo{title}{Guidelines for human-ai interaction},
+\newblock in: \bibinfo{booktitle}{Proceedings of the CHI Conference on Human
+  Factors in Computing Systems}, \bibinfo{publisher}{Association for Computing
+  Machinery}, \bibinfo{address}{New York, NY, USA}, \bibinfo{year}{2019}, pp.
+  \bibinfo{pages}{1--13}.
+%Type = Article
+\bibitem[{Kitchenham et~al.(2002)Kitchenham, Pfleeger, Pickard, Jones, Hoaglin,
+  El~Emam, and Rosenberg}]{R70}
+\bibinfo{author}{B.~A. Kitchenham}, \bibinfo{author}{S.~L. Pfleeger},
+  \bibinfo{author}{L.~M. Pickard}, \bibinfo{author}{P.~W. Jones},
+  \bibinfo{author}{D.~C. Hoaglin}, \bibinfo{author}{K.~El~Emam},
+  \bibinfo{author}{J.~Rosenberg},
+\newblock \bibinfo{title}{Preliminary guidelines for empirical research in
+  software engineering},
+\newblock \bibinfo{journal}{IEEE Transactions on Software Engineering}
+  \bibinfo{volume}{28} (\bibinfo{year}{2002}) \bibinfo{pages}{721--734}.
+%Type = Article
+\bibitem[{Runeson and H{\"o}st(2009)}]{R54}
+\bibinfo{author}{P.~Runeson}, \bibinfo{author}{M.~H{\"o}st},
+\newblock \bibinfo{title}{Guidelines for conducting and reporting case study
+  research in software engineering},
+\newblock \bibinfo{journal}{Empirical Software Engineering}
+  \bibinfo{volume}{14} (\bibinfo{year}{2009}) \bibinfo{pages}{131--164}.
+%Type = Techreport
+\bibitem[{Moreau and Missier(2013)}]{R93}
+\bibinfo{author}{L.~Moreau}, \bibinfo{author}{P.~Missier},
+  \bibinfo{title}{PROV-DM: The PROV Data Model}, \bibinfo{type}{W3C
+  Recommendation}, World Wide Web Consortium, \bibinfo{year}{2013}. \URLprefix
+  \url{https://www.w3.org/TR/prov-dm/}.
+%Type = Inproceedings
+\end{thebibliography}
+\end{document}

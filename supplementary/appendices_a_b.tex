@@ -21,7 +21,7 @@
 \normalsize Anonymous authors
 \end{center}
 \appendix
-\setcounter{table}{6}
+\setcounter{table}{5}
 \renewcommand{\thetable}{\thesection.\arabic{table}}
 \section{Scoring Model Sanity Checks under Deterministic Perturbation}\label{sec:stress-testing}
 Table~\ref{tab:scoring-sanity-checks} summarizes the formula-generated profiles for the internal and public-input checks. The internal check applies seeded perturbations to reused runtime-derived inputs; the public-input check applies the same formulas to 300 SWE-bench Lite issue texts~\citep{R26}. B0--B3 identify scoring profiles in this table. Their composite uses weights of 0.45 for quality, 0.30 for efficiency, and 0.25 for governance on a 0--100 scale. These rows check the scoring implementation and are separate from the executed baseline comparison in Section~5.3 of the main manuscript.
