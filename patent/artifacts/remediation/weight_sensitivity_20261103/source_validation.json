@@ -1,0 +1,15 @@
+{
+  "anonymous_provenance_note": "Original private-rating digest withheld; unchanged aggregate and reference data are included. Local CHECKSUMS.sha256 covers the sanitized public files.",
+  "epics": 14,
+  "excluded_masked_repeats": 160,
+  "packages": 42,
+  "primary_ratings": 1680,
+  "primary_ratings_per_method": 560,
+  "public_mapping": "Sorted input order mapped to U01-U14, as in the existing public priority aggregate.",
+  "raw_rating_values_modified": false,
+  "reviewers": 40,
+  "source_rows": 1840,
+  "source_sha256_after": null,
+  "source_sha256_before": null,
+  "source_unchanged": true
+}

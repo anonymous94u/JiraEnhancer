@@ -1,0 +1,43 @@
+{
+  "anonymous_provenance_note": "Historical implementation digests are withheld. sanitized_snapshot_sha256 checks the included sanitized source files; it does not assert those exact bytes produced the archived observations. Seed, schedule hash, summary hash and trial values are unchanged.",
+  "experiment": "source-bound-causal-transaction-ablation-v1",
+  "implementation_sha256": {
+    "patent/run_source_bound_transaction_experiment.py": null,
+    "src/jira_enhancer/causal_transaction.py": null,
+    "src/jira_enhancer/services.py": null,
+    "src/jira_enhancer/store.py": null,
+    "tests/test_causal_transaction.py": null
+  },
+  "interpretation": "Controlled fault-injection evidence; not external-customer production evidence.",
+  "logical_transactions_per_method": 18000,
+  "methods": [
+    "A0_ordinary_approval_log",
+    "A1_source_hash_conditional",
+    "A2_source_hash_atomic_idempotency",
+    "A3_source_bound_causal_transaction"
+  ],
+  "python_version": "3.12.14",
+  "sanitized_snapshot_sha256": {
+    "patent/run_source_bound_transaction_experiment.py": "23295bd430cd273323863a2fc074bfedec72bbae701976b06b5570ee694c9cf1",
+    "src/jira_enhancer/causal_transaction.py": "450abb1a8b8d744dcaa492523cef1efacfbcfe051529b618b373fc41489dedc0",
+    "src/jira_enhancer/services.py": "2cdc67b01f0fb99643704cc933bc5ac37f40966be6e0a5f2c26c564828a67043",
+    "src/jira_enhancer/store.py": "d355cec14068a99025285a546e0a07cf1dddde8cff375260d816034394d1d762",
+    "tests/test_causal_transaction.py": "7a825a57fd86f5a4ede4598a402deca4d6c039653b68c221c715a7a9bc3df8d7"
+  },
+  "scenarios": [
+    "valid_control",
+    "source_edit",
+    "source_aba",
+    "draft_drift",
+    "policy_drift",
+    "target_drift",
+    "response_loss_retry",
+    "concurrent_retry",
+    "combined_source_and_draft_drift"
+  ],
+  "schedule_hash": "b37de1e0d99cdbe6b52039964cd7927f80587da5ac1e06a00fbacd55abd4cbb3",
+  "seed": 20260726,
+  "summary_hash": "d670a8c8e804d051de334e5ae90899ee4d5feebded980abff68e5ca39c73a1c7",
+  "total_observations": 72000,
+  "trials_per_scenario": 2000
+}

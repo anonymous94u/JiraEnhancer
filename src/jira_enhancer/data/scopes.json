@@ -1,0 +1,12 @@
+{
+  "sprints": {
+    "SPRINT-42": ["DEMO-101", "DEMO-102"],
+    "SPRINT-43": ["DEMO-103"]
+  },
+  "epics": {
+    "DEMO-1000": ["DEMO-101", "DEMO-102", "DEMO-103"]
+  },
+  "releases": {
+    "2026.06": ["DEMO-101", "DEMO-102", "DEMO-103"]
+  }
+}

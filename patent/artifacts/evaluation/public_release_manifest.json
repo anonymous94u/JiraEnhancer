@@ -1,0 +1,23 @@
+{
+  "anonymous_provenance_note": "Digests cover this sanitized snapshot; original-source digests are withheld.",
+  "artifact": "jira-enhancer-public-reviewer-release-v1",
+  "comparative_table": {
+    "design": "deterministic formula-expanded sensitivity diagnostic",
+    "independence_boundary": "The 20,000 rows are not independent production observations and must not be used as population-level replication evidence.",
+    "methods": [
+      "B0_manual",
+      "B1_template_rules",
+      "B2_generic_llm",
+      "B3_jira_enhancer"
+    ],
+    "rows_per_method": 5000
+  },
+  "files": {
+    "analysis_summary.json": "a3e66c580b192713b74c27343ed9c5604a26de75f4fb050ebf4ee0166c03f683",
+    "anonymized_latest_batch_audit.csv": "aad60bd53b0f77ef8ee42e31edd423099a42a39b2fd3b88678e781b6d1439949",
+    "anonymized_live_story_outcomes.csv": "6700caed05bd0de66544bcdb46a26c5608f65f959e2300667195ec6c1ff83bf3",
+    "comparative_5000_units.csv": "90df960658ae2c2eefc2563e235fde5e2143010e3190de3247fe324900e08ef8",
+    "manifest.json": "4c4597b24c4b0719823703c9eb291f77b17f72bd6250bcb92ff098f6530362c0"
+  },
+  "privacy_boundary": "The release excludes issue and epic keys, source run IDs, URLs, account names, email addresses, timestamps, summaries, reviewer identities, and raw connector telemetry."
+}

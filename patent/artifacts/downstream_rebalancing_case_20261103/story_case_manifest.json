@@ -1,0 +1,55 @@
+{
+  "case_title": "Subscriber connection rebalancing",
+  "execution_evidence": {
+    "date": "2026-10-15",
+    "file": "rebalance_case_verified_metrics.json",
+    "run_ids": [
+      "validation-pooling-enabled",
+      "validation-pooling-disabled"
+    ],
+    "scope": "development validation; subscription-only scale-out"
+  },
+  "identifier_policy": "Component, run and file aliases replace identifying source labels. No original-identifier mapping is included.",
+  "provenance": {
+    "acceptance_criteria_reconstructed": false,
+    "component_selection": "author-selected case stories",
+    "full_story_descriptions_included": false,
+    "jira_enhancer_origin": "author-confirmed",
+    "original_generation_payload_retained": false
+  },
+  "record_kind": "structured_case_summary",
+  "schema_version": 1,
+  "stories": [
+    {
+      "case_role": "server-side rebalancing implementation",
+      "component": "Subscriber Service",
+      "covered_by_retained_execution_runs": true,
+      "evidence": "rebalance_case_verified_metrics.json",
+      "story_alias": "S1",
+      "verified_coverage": [
+        "ready subscription-binding placement after manual scale-out",
+        "source DRAINED and RETIRED responses within the recorded handoff lifecycle"
+      ]
+    },
+    {
+      "case_role": "Java client rebalancing implementation",
+      "component": "Java SDK",
+      "covered_by_retained_execution_runs": false,
+      "execution_scope": "The retained October 15 case runs used Python clients.",
+      "story_alias": "S2"
+    },
+    {
+      "case_role": "Python client rebalancing implementation",
+      "component": "Python SDK",
+      "covered_by_retained_execution_runs": true,
+      "evidence": "rebalance_case_verified_metrics.json",
+      "story_alias": "S3",
+      "verified_coverage": [
+        "five persistent client processes retaining their requested subscription bindings",
+        "ordered handoff phases and same-session subscription receipts",
+        "within-session telemetry cadence and worker cleanup"
+      ]
+    }
+  ],
+  "story_count": 3
+}

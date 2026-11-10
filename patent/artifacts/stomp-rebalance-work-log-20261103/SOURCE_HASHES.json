@@ -1,0 +1,336 @@
+{
+  "anonymous_provenance_note": "Original-source digests are withheld for anonymous review; retained verification statements describe the source audit. CHECKSUMS.sha256 covers only the sanitized files supplied here.",
+  "files": [
+    {
+      "bytes": 5749,
+      "category": "top-level metadata",
+      "sha256": null,
+      "source_alias": "SOURCE_001"
+    },
+    {
+      "bytes": 494841,
+      "category": "top-level metadata",
+      "sha256": null,
+      "source_alias": "SOURCE_002"
+    },
+    {
+      "bytes": 4065,
+      "category": "top-level metadata",
+      "sha256": null,
+      "source_alias": "SOURCE_003"
+    },
+    {
+      "bytes": 25613,
+      "category": "top-level metadata",
+      "sha256": null,
+      "source_alias": "SOURCE_004"
+    },
+    {
+      "bytes": 349,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_005"
+    },
+    {
+      "bytes": 348,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_006"
+    },
+    {
+      "bytes": 336,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_007"
+    },
+    {
+      "bytes": 332,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_008"
+    },
+    {
+      "bytes": 348,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_009"
+    },
+    {
+      "bytes": 350,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_010"
+    },
+    {
+      "bytes": 398,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_011"
+    },
+    {
+      "bytes": 398,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_012"
+    },
+    {
+      "bytes": 363,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_013"
+    },
+    {
+      "bytes": 376,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_014"
+    },
+    {
+      "bytes": 359,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_015"
+    },
+    {
+      "bytes": 395,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_016"
+    },
+    {
+      "bytes": 396,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_017"
+    },
+    {
+      "bytes": 386,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_018"
+    },
+    {
+      "bytes": 363,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_019"
+    },
+    {
+      "bytes": 384,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_020"
+    },
+    {
+      "bytes": 358,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_021"
+    },
+    {
+      "bytes": 374,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_022"
+    },
+    {
+      "bytes": 372,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_023"
+    },
+    {
+      "bytes": 367,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_024"
+    },
+    {
+      "bytes": 349,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_025"
+    },
+    {
+      "bytes": 348,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_026"
+    },
+    {
+      "bytes": 336,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_027"
+    },
+    {
+      "bytes": 332,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_028"
+    },
+    {
+      "bytes": 348,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_029"
+    },
+    {
+      "bytes": 350,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_030"
+    },
+    {
+      "bytes": 398,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_031"
+    },
+    {
+      "bytes": 398,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_032"
+    },
+    {
+      "bytes": 363,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_033"
+    },
+    {
+      "bytes": 376,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_034"
+    },
+    {
+      "bytes": 359,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_035"
+    },
+    {
+      "bytes": 395,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_036"
+    },
+    {
+      "bytes": 396,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_037"
+    },
+    {
+      "bytes": 386,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_038"
+    },
+    {
+      "bytes": 363,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_039"
+    },
+    {
+      "bytes": 384,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_040"
+    },
+    {
+      "bytes": 358,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_041"
+    },
+    {
+      "bytes": 374,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_042"
+    },
+    {
+      "bytes": 372,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_043"
+    },
+    {
+      "bytes": 367,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_044"
+    },
+    {
+      "bytes": 373,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_045"
+    },
+    {
+      "bytes": 377,
+      "category": "machine-test-output",
+      "sha256": null,
+      "source_alias": "SOURCE_046"
+    },
+    {
+      "bytes": 11591,
+      "category": "top-level metadata",
+      "sha256": null,
+      "source_alias": "SOURCE_047"
+    },
+    {
+      "bytes": 27409,
+      "category": "reference-reports",
+      "sha256": null,
+      "source_alias": "SOURCE_048"
+    },
+    {
+      "bytes": 7005,
+      "category": "reference-reports",
+      "sha256": null,
+      "source_alias": "SOURCE_049"
+    },
+    {
+      "bytes": 2874,
+      "category": "reference-reports",
+      "sha256": null,
+      "source_alias": "SOURCE_050"
+    },
+    {
+      "bytes": 34817,
+      "category": "reference-reports",
+      "sha256": null,
+      "source_alias": "SOURCE_051"
+    },
+    {
+      "bytes": 59942,
+      "category": "reference-reports",
+      "sha256": null,
+      "source_alias": "SOURCE_052"
+    },
+    {
+      "bytes": 2017,
+      "category": "top-level metadata",
+      "sha256": null,
+      "source_alias": "SOURCE_053"
+    },
+    {
+      "bytes": 51687,
+      "category": "top-level metadata",
+      "sha256": null,
+      "source_alias": "SOURCE_054"
+    },
+    {
+      "bytes": 8540,
+      "category": "top-level metadata",
+      "sha256": null,
+      "source_alias": "SOURCE_055"
+    }
+  ],
+  "source_manifest_sha256": null
+}
