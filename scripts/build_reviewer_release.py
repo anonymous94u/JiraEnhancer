@@ -23,6 +23,8 @@ TOP_LEVEL_FILES = (
     "Makefile",
     "README.md",
     "docs/REPRODUCIBILITY.md",
+    "docs/laplace_convergence.md",
+    "docs/laplace_convergence_original.tex",
     "ANONYMIZATION.md",
     "REPLICATION_ENVIRONMENT.json",
     "pyproject.toml",

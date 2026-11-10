@@ -1,0 +1,40 @@
+% Archived subsection before condensation. See laplace_convergence.md for mathematical assumptions and implementation correspondence.
+\subsubsection{Laplace-Domain Convergence View}
+Because the human-in-the-loop refinement sequence operates as a discrete-time process, its optimization pathway is traced through the confidence lag sequence $\{\ell_t\}_{t=1}^T$, where $T$ defines the maximum retry boundary. To ensure the transparency and deterministic behavior of the assistant's internal tracking loops—critical for operational trustworthiness—we interpolate this discrete state vector into a continuous-time landscape $\ell(t)$ exclusively to model its system dynamics via Laplace-domain metrics. We explicitly emphasize that this continuous mapping is implemented solely as an algorithmic observability diagnostic to confirm that the assistant's internal prompt-selection mechanism moves predictably toward target gates without entering infinite optimization stalls or chaotic oscillations. It does not provide a mathematical guarantee of real-world text perfection, nor does it measure semantic accuracy independent of human domain validation.
+
+
+Let the idealized lag dynamics be:
+\begin{equation}
+\frac{d\ell(t)}{dt} = -\kappa \ell(t) + d_{\ell}(t),
+\end{equation}
+where \(\kappa>0\) represents the convergence rate of the chosen prompt policy and \(d_{\ell}(t)\) denotes a bounded disturbance from lack of evidence, conflicting context, or reviewer feedback. Let $s_L$ denote the Laplace-domain variable, $\Lambda_{\ell}(s_L)=\mathcal{L}\{\ell(t)\}$, and $D_{\ell}(s_L)=\mathcal{L}\{d_{\ell}(t)\}$. The transformed dynamics are:
+\begin{equation}
+s_L\Lambda_{\ell}(s_L)-\ell(0)=-\kappa\Lambda_{\ell}(s_L)+D_{\ell}(s_L),
+\end{equation}
+and therefore:
+\begin{equation}
+\Lambda_{\ell}(s_L)=\frac{\ell(0)+D_{\ell}(s_L)}{s_L+\kappa}.
+\end{equation}
+In the no-disturbance case, \(D_{\ell}(s_L)=0\), so:
+\begin{equation}
+\Lambda_{\ell}(s_L)=\frac{\ell(0)}{s_L+\kappa}.
+\end{equation}
+The only pole is at \(s_L=-\kappa\). Hence the lag dynamics are stable when \(\kappa>0\). By the final value theorem,
+\begin{equation}
+\lim_{t\to\infty}\ell(t)=\lim_{s_L\to 0}s_L\Lambda_{\ell}(s_L)=0,
+\end{equation}
+This implies that confidence lag converges to zero when the refinement policy has positive effective gain and no persistent disturbance. If $|d_{\ell}(t)|\le d_{\max}$, then the steady-state lag magnitude is bounded above by $d_{\max}/\kappa$; hence, larger \(\kappa\) implies faster and tighter convergence.
+
+In practice, the value of \(\kappa\) is estimated from observed attempts using the following formula:
+\begin{equation}
+\kappa = \max\left(\frac{n}{\sum \delta},\epsilon\right),
+\end{equation}
+where \(\epsilon>0\) prevents zero denominators in calculations.
+The value of \(\kappa\) can also be recorded along with the confidence trajectory and may provide insight into whether another attempt will help.
+
+By the final value theorem, assuming a zero-disturbance idealization:
+\begin{equation}
+	\lim_{t\to\infty} \ell(t) = \lim_{s_L\to0} s_L \Lambda_{\ell}(s_L) = 0
+\end{equation}
+This diagnostic result indicates that under idealized operational conditions, the confidence lag mathematically decays to zero provided the refinement policy retains a positive effective gain ($\kappa > 0$). In practice, this parameter $\kappa$ is tracked dynamically to identify runs where refinement updates have hit diminishing returns or reached systemic barriers. This asymptotic limit applies strictly to the mathematical behavior of the internal scoring heuristic within the pipeline, and must not be interpreted as a guarantee of complete real-world semantic readiness or artifact error-elimination.
+
