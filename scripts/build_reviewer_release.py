@@ -79,7 +79,17 @@ TEST_FILES = (
     "test_rl.py", "test_scorer.py", "test_sources.py", "test_store.py", "test_workflow.py",
 )
 EVIDENCE_FILES = {
-    "supplementary": ("README.md", "appendices_c_d.tex", "appendices_c_d.pdf"),
+    "supplementary": (
+        "README.md", "appendices_a_b.tex", "appendices_a_b.pdf",
+        "module_architecture.tex", "module_architecture.pdf",
+        "appendices_c_d.tex", "appendices_c_d.pdf",
+    ),
+    "supplementary/figures": (
+        "fig_agentic_module_story_issue_enhancer.png",
+        "fig_agentic_module_epic_breaker.png",
+        "fig_agentic_module_prompt_generator.png",
+        "fig_agentic_module_rl_controller.png",
+    ),
     "patent/artifacts/stomp-rebalance-work-log-20261103": (
         'README.md',
         'activity-log.jsonl',
