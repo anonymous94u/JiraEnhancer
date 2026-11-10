@@ -6,7 +6,7 @@ This anonymous replication package contains the implementation, executable tests
 
 Repository: [anonymous94u/JiraEnhancer](https://github.com/anonymous94u/JiraEnhancer).
 
-[Reproduction guide](docs/REPRODUCIBILITY.md) · [Matched-review results](patent/reviewer_study/public_results/RESULTS.md)
+[Reproduction guide](docs/REPRODUCIBILITY.md) · [Matched-review results](patent/reviewer_study/public_results/RESULTS.md) · [Supplementary Appendices C and D](supplementary/appendices_c_d.pdf)
 
 ![Jira Enhancer architecture](patent/images/system_architecture_embedded.png)
 

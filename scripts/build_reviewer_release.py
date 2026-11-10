@@ -77,6 +77,7 @@ TEST_FILES = (
     "test_rl.py", "test_scorer.py", "test_sources.py", "test_store.py", "test_workflow.py",
 )
 EVIDENCE_FILES = {
+    "supplementary": ("README.md", "appendices_c_d.tex", "appendices_c_d.pdf"),
     "patent/artifacts/stomp-rebalance-work-log-20261103": (
         'README.md',
         'activity-log.jsonl',
