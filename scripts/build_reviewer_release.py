@@ -81,6 +81,7 @@ TEST_FILES = (
 EVIDENCE_FILES = {
     "supplementary": (
         "README.md", "additional_methods.tex", "additional_methods.pdf",
+        "matched_review_radar.tex", "matched_review_radar.pdf",
         "appendices_a_b.tex", "appendices_a_b.pdf",
         "module_architecture.tex", "module_architecture.pdf",
         "appendices_c_d.tex", "appendices_c_d.pdf",
