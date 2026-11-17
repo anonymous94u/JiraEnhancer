@@ -1,5 +1,5 @@
 % Consolidated from the five current anonymous supplementary documents.
-% Scientific text, numerical values, labels, and graphics are preserved.
+% Prose is simplified for general readers; results, equations, labels, citations, and graphics are preserved.
 \documentclass[10pt,a4paper]{article}
 \usepackage[margin=0.8in]{geometry}
 \usepackage[T1]{fontenc}
@@ -32,105 +32,107 @@
 Anonymous authors\\[0.7em]
 \href{https://github.com/anonymous94u/JiraEnhancer/raw/refs/heads/main/supplementary/supplementary_material.pdf}{Download the supplementary PDF}
 \end{center}
+\paragraph{A short reading guide.}
+An epic describes a large piece of planned work. A story describes a smaller piece. An epic package is the set of proposed stories for an epic. Evidence means source information used to draft or check a story. A prompt is an instruction given to the language model. A policy is a workflow rule; validation checks whether the required data and conditions are met.
+
+B1 uses fixed templates, B2 makes one drafting request to a large language model, and B3 is Jira Enhancer. B0 denotes a manual reference that needs independent preparation. Appendix A uses B0--B3 only as formula-based scoring profiles.
+
 \pdfbookmark[0]{Contents}{contents}
 \tableofcontents
 \clearpage
 \begin{landscape}
-\section{Related-work comparison}
+\section{Comparison with related work}
 \begin{table}[H]
 \centering
 \setlength{\tabcolsep}{4pt}
 \small
-\caption{Comparison of the main paradigms discussed in the background and related work: representative strengths, enterprise-planning limitations, and the position of Jira Enhancer (B3) relative to B0/B1/B2.}
+\caption{Main approaches discussed in the background and related work: their strengths, limits in enterprise planning, and relation to Jira Enhancer (B3) and B0/B1/B2.}
 \label{tab:related-work-comparative}
 \begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.18\linewidth}>{\raggedright\arraybackslash}p{0.20\linewidth}>{\raggedright\arraybackslash}X@{}}
 \toprule
-Paradigm & Representative prior work & Typical strength & Common constraint in enterprise planning & Position of B0/B1/B2/B3 \\
+Approach & Related work & Main strength & Common limit in enterprise planning & Relation to B0/B1/B2/B3 \\
 \midrule
-Template/rule decomposition & RE standards, agile requirements, and user-story quality work \citep{R52,R62,R63} & High consistency and stable formatting & Little ability to adapt to ambiguous epics; poor semantic understanding of unfamiliar situations & B0 and B1 are closest relatives of this family; B3 retains its structure but adds adaptive semantic reasoning \\
-Generic LLM drafting & Prompt-driven generation, code assistants, and reasoning methods \citep{R1,R14,R59,R77} & natural-language drafts and broad transfer between tasks & Fluency, but lack of structure; confidence is uncoupled from mutation authority & B2 is closest relative of this family; B3 adds critic loops, validators and governance coupling \\
-Retrieval-augmented generation & Retrieval-augmented and dense-retrieval methods \citep{R3,R5,R22} & Strong evidence base for grounding and factual memory recall & Varying retrieval quality; context-packing is not well defined for workflow-mutation situations & B3 converts retrieval into operation through ranking of context packets and explicit tracking of missing signals \\
-Agent/tool orchestration & Tool-use methods and agent benchmarks \citep{R17,R27,R28,R92} & Strong multi-step execution ability and coordination with external systems & Inconsistent run-time behavior and risk of harm \citep{R87} when there is no deterministic bound on mutation & B3 constrains execution using policy-gated, hash-checked and idempotent write-back \\
-Trust \citep{R76}, confidence controls, governance & Alignment, human-AI collaboration, automation-trust, and socio-technical SE studies \citep{R13,R57,R75,R58} & Facilitates control and accountability \citep{R56} & Typically investigated in settings away from issue-tracker mutation & B3 directly implements this layer in Jira using human approval and policy gates \\
+Splitting work through templates and rules & Requirements standards, agile requirements, and user-story quality \citep{R52,R62,R63} & Consistent output and formatting & Limited ability to handle unclear epics or understand unfamiliar situations & B0 and B1 are closest to this approach; B3 keeps its structure and adds reasoning that adapts to the input \\
+Drafting with a large language model (LLM) & Generation from prompts, coding assistants, and reasoning methods \citep{R1,R14,R59,R77} & Readable drafts across many tasks & Fluent text can lack structure; confidence scores are separate from permission to change records & B2 is closest to this approach; B3 adds repeated draft checks, validation, and workflow controls \\
+Generation using retrieved evidence & Evidence-search methods, including search by meaning \citep{R3,R5,R22} & Source material supports factual answers & Search quality varies; how to select and arrange evidence for changes to shared records is not well defined & B3 ranks groups of evidence and records which information is missing \\
+Coordinating agents and tools & Tool-use methods and tests of agents \citep{R17,R27,R28,R92} & Multiple steps and coordination with external systems & Behavior can vary during use, with a risk of harm \citep{R87} when changes to records have no fixed limits & B3 checks rules and source changes before writing, and prevents retries from repeating a write \\
+Trust \citep{R76}, confidence, and control & Studies of AI behavior aligned with human aims, human--AI collaboration, trust in automation, and people and processes in software engineering \citep{R13,R57,R75,R58} & Supports control and accountability \citep{R56} & Usually studied outside changes to issue-tracker records & B3 applies these controls in Jira through human approval and checks against workflow rules \\
 \bottomrule
 \end{tabularx}
 \end{table}
 \end{landscape}
-\section{API and UI Console Workflow}\label{sec:workflow-ui}
+\section{Software interface and review console}\label{sec:workflow-ui}
 
 \subsection{Workflow API}
-The workflow has two tasks: enriching existing Jira items and breaking epics into candidate stories. Drafting, human review, and changes to Jira are separate steps. A run can cover an issue, sprint, epic, or release. Reviewers can check the run status and each item's draft, evidence, warnings, readiness, confidence, policy state, and prompt-selection details before making a decision.
+The application programming interface (API) lets software request work and review its results. The workflow has two tasks: improving existing Jira items and splitting epics into proposed stories. Drafting, human review, and writing changes back to Jira, called writeback, are separate steps. A run can cover an issue, sprint (a planned work period), epic, or release (a software version). Before deciding, reviewers can inspect the run status, draft, evidence, warnings, readiness, confidence, workflow-rule status, and selected prompt. Readiness is the system's estimate of how ready a draft is to use; confidence is the system's own score for the draft.
 
-For one item or the whole run, reviewers can approve, reject, request a new draft, suggest a change, or provide an instruction for further revision. Suggestions and reviewer-written instructions return to the reasoning process to produce a revised draft. If the system asks a question, the reviewer's answer continues the revision. Writing an approved item back to Jira is a separate action, allowed only after policy, validation, source-conflict, and retry checks. When several items are written together, each keeps its own result and reason for success, a block, a conflict, or a repeated request.
+For one item or the whole run, reviewers can approve, reject, request a new draft, suggest a change, or give instructions for revision. The system uses these suggestions and instructions to revise the draft. If it asks a question, the reviewer's answer continues the revision. Writeback is a separate action. It requires checks of workflow rules, data validity, changes to the source, and repeated requests. When several items are written together, each retains its own result and the reason for success, a block, a conflict, or a repeated request.
 
-To break down an epic, the system reads the epic, existing child stories, and available evidence. It returns editable candidates with readiness, confidence, threshold status, warnings, and evidence references, without creating Jira stories. The creation step takes the reviewed story data, checks confidence and approval, skips matching existing summaries, and tries to create the remaining stories. It lists created and skipped items, with reasons for duplicates and creation failures. Reviewers and controlled software clients use the same API rules and governance checks throughout inspection, guidance, revision, approval, and writeback.
+To split an epic, the system reads the epic, its existing stories, and the available evidence. It returns proposed stories that reviewers can edit. Each includes readiness, confidence, whether the required score threshold is met, warnings, and links to evidence. This step does not create stories in Jira. The separate creation step takes the reviewed data, checks confidence and approval, skips summaries that match existing stories, and tries to create the rest. It lists created and skipped items and gives reasons for duplicates and failures. Reviewers and controlled software clients follow the same API rules and checks during inspection, guidance, revision, approval, and writeback.
 
-\subsection{Console Workflow}
-The console has three connected views. The enrichment view starts a run and shows each draft with its evidence, warnings, readiness, confidence, and selected prompt. The review view provides the approval and revision actions, including suggestions and Jira-specific prompts, for one item or the whole run. The Epic Story Breakdown view takes epic and project keys, requests story suggestions, and shows editable, structured story data with an \texttt{approved} flag for each story. Reviewers can edit content, add missing context, or provide a new prompt before using a separate action to create approved stories that pass the required checks. A revision request does not authorize a change to Jira.
+\subsection{Review console}
+The console is the user interface (UI) for review and has three connected views. The enrichment view starts a run and shows each draft, its evidence, warnings, readiness, confidence, and selected prompt. The review view lets reviewers approve or request revisions for one item or the whole run. They can also suggest changes or supply Jira-specific prompts. The Epic Story Breakdown view takes the identifiers of an epic and project, requests story suggestions, and shows editable story fields with an \texttt{approved} flag for each story. Reviewers can edit the text, add missing context---information needed to understand the task---or provide a new prompt. A separate action creates approved stories that pass the checks. A revision request does not authorize a change to Jira.
 
-Reviewers read the stories and assess their risks through the console. Controlled agents and automated workflows use the same API with fixed rules for the submitted data. This supports integration with release-planning bots, PM dashboards, and governance data lakes under the same controls. The console shows the sources behind confidence scores, warnings, policy reason codes, approval records, duplicate-skip reasons, and story selections kept for retry. These displays are intended to help reviewers interpret confidence and choose whether to accept, reject, or retry. Their effect on live console decisions was not measured in the artifact study. The design seeks appropriate trust rather than maximum automation, reflecting evidence that human--AI team performance depends on users' understanding of system behavior \citep{R56,R57,R76}.
+Reviewers read stories and assess their risks in the console. Controlled agents and automated workflows use the same API and fixed rules for submitted data. This allows release-planning bots, project-management dashboards, and stores of rule and approval records to use the same controls. The console displays the sources behind confidence scores, warnings, codes explaining rule decisions, approval records, reasons for skipping duplicates, and the stories selected for retry. These displays are intended to help reviewers interpret confidence and decide whether to accept, reject, or retry. Their effect on decisions during live console use was not measured in the artifact study. The aim is appropriate trust, not maximum automation. This follows evidence that human--AI team performance depends on users understanding how the system behaves \citep{R56,R57,R76}.
 
-\subsection{Evidence Availability and Recovery}\label{sec:evidence-recovery}
+\subsection{Missing evidence and recovery}\label{sec:evidence-recovery}
 
-The system classifies warning codes, such as external authentication requirements and MCP unavailability, and propagates them to run- and story-level review records. This supports graceful degradation:
+The system records warning codes for problems such as a required external sign-in or an unavailable Model Context Protocol (MCP) connection to external tools. These warnings appear in both run and story review records. The system can therefore continue with less evidence while showing what is missing:
 \begin{equation}
 \texttt{service\_mode} \in \{\texttt{full-context},\texttt{reduced-context}\}.
 \end{equation}
-\textit{Full-context} mode is used for cases with external evidence; \textit{reduced-context} mode is applied when only issue-local evidence is available.
+\textit{Full-context} mode uses external evidence. \textit{Reduced-context} mode uses only evidence in the issue itself.
 
-\textit{Reduced-context} mode is designed to remain useful instead of failing softly. It still provides structured drafts and warning metadata, which allows reviews to continue in an informed way.
+\textit{Reduced-context} mode is designed to remain useful when external evidence is missing. It still produces drafts with defined fields and records the warnings, so reviewers can continue with those limits in view.
 
-In reliability engineering, the ``graceful capability collapse'' pattern is applied instead of binary failure. For example, if a high-value evidence source such as Confluence is offline, the system retains decomposition capability by using the available issue records and marking the missing evidence categories. Available issue records prevent planning deadlock, while metadata preservation maintains the meaning of the confidence score.
+This behavior is called ``graceful capability collapse'': the system continues with fewer capabilities and makes the limits visible. For example, if Confluence is unavailable, the system can still split an epic using the issue records it has. It marks the types of evidence that are missing. Available issue records let planning continue, while the retained warnings help reviewers interpret the confidence score.
 
-Transient failures are retried using exponential backoff and jitter, while terminal errors are reported with machine-actionable error codes. The technique allows for automatic retry management at the orchestration layer without hiding permanent integration issues.
+The system retries temporary failures with increasing delays and a small random variation in each delay, known as exponential backoff and jitter. It reports errors that stop the current operation through codes that other software can read. The workflow controller can thus manage retries without hiding lasting problems with external systems.
 
-The user-guided workflow maintains collaboration context through the stages in case of failures. If the story creation fails or times out, then the selected stories will still be present in the console. User will be able to look at the partial generation results in Jira and continue working on them without having to regenerate the decision set. Such capability is important for human--AI cooperation since recovery should not be limited to backend functionality but should be visible for a human making retry, change, or cancel decisions.
+The workflow preserves the review state when a failure occurs. If story creation fails or times out, the selected stories remain in the console. Reviewers can inspect partial results in Jira and continue without generating the selected stories again. Recovery is visible to the reviewer, who can choose to retry, change, or cancel the action.
 
 
 \FloatBarrier
-\section{System Architecture}
+\section{System design}
 Figure 1(a) and Figure 1(b) refer to the architecture panels in the main manuscript.
 
-Figure~1(a) presents the complete system architecture, showing how the LLM, RL-guided prompt-selection layer, and human-governance mechanisms interact to address the software-engineering and requirements-engineering challenges discussed above. The subsequent sections explain the main architectural components in greater detail.
+Figure~1(a) shows how the LLM, prompt selection guided by reinforcement learning (RL), and human controls work together. RL uses feedback from earlier outcomes to guide later choices. The sections below explain the system's main parts.
 
+\subsection{How to read the figures}
+Figures~1(a) and~1(b) and Supplementary Figure~\ref{fig:agentic-module-architecture} show three views: the system and its permission boundaries, the order of operations, and the work assigned to each agent. The overlap lets readers check whether the design covers the required work, whether steps occur in the right order, and who is responsible for each step. The connections and arrows represent software-enforced API contracts: fixed rules for the requests and data exchanged between parts of the system. Components exchange data through REST interfaces, which carry software requests, and schemas, which define the required fields and their types. These rules govern each handoff rather than leaving it to free-form text checks.
 
+\paragraph{Figure 1(a): system overview.}
+Figure~1(a) places the external sources outside the AI boundary: Jira epics, stories, and target records; Confluence requirements and designs; and Bitbucket code and reviews. Inside Jira Enhancer are the review console, workflow controller, draft-improvement engine, RL prompt policy, rule checks, event records, and writer that checks for conflicts. Together they turn evidence into proposed stories. The components that generate, check, and improve stories cannot update Jira directly. A proposed story can be written only after it passes validation and the confidence threshold, meets the relevant rules, and receives human approval.
 
+\paragraph{Figure 1(b): order of operations.}
+Figure~1(b) shows the order of work. A run gathers Jira information and evidence from requirements, designs, code, and reviews. The controller records the workflow entry and selects a permitted prompt strategy. It then generates and scores proposed stories, applies the rules, and records each step. Only stories that pass the required checks may be written to Jira. The arrows show the handoffs for preparing inputs, recording prompt choices, scoring stories, recording rule decisions, and checking writeback. Before writing, the system checks for conflicting edits and duplicate stories. It also checks idempotency: a repeated request must not repeat the write. If the required checks do not pass, the item stays in review, refinement, conflict, or failure, and Jira is not updated.
 
+Supplementary Figure S1 shows the four modules for improving stories, splitting epics into stories, creating prompts, and selecting prompts through RL.
 
-\subsection{Reading the architecture figures.} The set of Figures~1(a) and~1(b) and Supplementary Figure~\ref{fig:agentic-module-architecture} provides three perspectives: architecture and trust boundaries, operational sequence, and internal decomposition of agents. The deliberate overlap helps to conduct separate reviews of completeness of the architecture, correctness of the execution, and responsibilities of agents. Crucially, the interface junctions and directional arrows mapped across these graphics represent strict, programmatically enforced API contracts. System components interact across boundaries through rigid REST and schema serialization layers, ensuring that data handoffs are deterministically bound rather than relying on fluid text validation.
-
-\paragraph{Figure 1(a): system architecture overview.}
-Figure~1(a) places Jira epics, stories, and writeback targets; Confluence requirements and design evidence; and Bitbucket code and review signals outside the AI boundary. Inside Jira Enhancer, the review console, orchestrator, semantic enrichment engine, RL policy, governance layer, event store, and conflict-safe writer transform evidence into candidate stories. The architecture clearly separates AI reasoning from changes to Jira. The enrichment and RL components can generate, evaluate, and improve a candidate story, but they cannot update Jira directly. A candidate can be written to Jira only after it passes validation and the confidence threshold, complies with the relevant policies, and receives human approval.
-
-\paragraph{Figure 1(b): execution/control flow.}
-Figure~1(b) displays the components in execution order. A run gathers Jira context and acquires requirement, design, code, and review signals. The orchestrator first makes a workflow entry and selects a permitted prompt strategy. Then, it generates and scores candidate stories, applies the policies, and logs all the steps. Only successful candidates may be written to Jira. Each arrow in the diagram depicts a clearly defined handoff from one component to another, which includes preparing inputs, logging the selection of prompts, candidate scoring, logging the policies applied, and validation of writing back to Jira. Before writing to Jira, the system ensures there are no conflicting edits, safe retries (idempotency), and duplicated stories. Otherwise, the item is left in review, refinement, conflict, or failure state without Jira being updated.
-
-Supplementary Figure S1 describes the four modules for story enhancement, epic-to-story decomposition, prompt generation, and RL-based prompt selection.
-
-The captions in Figures~1(a) and~1(b) represent executable contracts. Context and Code Retrieve normalize the inputs, Human Actions captures the reviewer’s intention, while selecting and generating safe-arms leads to scoring of candidates; Policy Check determines confidence, role, validation, and approval; Persist trace records state, results, and evidence links. Approved creation reaches controlled writeback only after the source hash, idempotency, duplicate, and target checks. The safety boundary is hence determined by this rule rather than fluency of text.
+The captions in Figures~1(a) and~1(b) describe rules enforced by the software. Context and Code Retrieve put inputs into a common form. Human Actions records the reviewer's decision. The system selects a permitted prompt strategy, generates a draft, and scores it. Policy Check checks confidence, the reviewer's role, validation, and approval. Persist trace records the state, results, and evidence links. Approved creation reaches writeback only after checks of the source hash, idempotency, duplicates, and target records. The source hash is a fingerprint used to detect changes in the source content. These checks control permission to write; fluent text does not grant that permission.
 
 
 % BEGIN preserved module_architecture.tex body
 \section*{Internal agent modules}
-Figure~\ref{fig:agentic-module-architecture} demonstrates four agentic capabilities within the AI engine. The first Agentic Module evaluates an issue and determines what acceptance criteria, testability, risks, and refinement areas are absent. The second Agentic Module creates candidate stories and dependencies for a high-level epic, adding acceptance criteria and data for human review. The third Agentic Module generates context-aware prompt packs using the issue text, reusable patterns, policy constraints, and information gaps that were identified. The fourth Agentic Module plays a role of an RL controller. It chooses an approved strategy to create prompts -- policy arm, evaluates the outcome, rewards it according to its quality, and adjusts the posterior estimate that is a measure of future success of the corresponding strategy. It enables the choice between different strategies, such as conservative decomposition and balanced-context generation, while avoiding any unsafe or unrestricted prompts.
+Figure~\ref{fig:agentic-module-architecture} shows four modules within the AI engine. The first checks an issue for missing acceptance criteria (conditions for accepting the work), ways to test it, risks, and areas that need more detail. The second splits a high-level epic into proposed stories and dependencies, with acceptance criteria and information for human review. The third prepares prompts from the issue text, reusable patterns, workflow rules, and known information gaps. The fourth is the RL controller. It chooses an approved prompt strategy, called a policy arm, evaluates the result, assigns a reward based on its quality, and updates the strategy's posterior estimate. This estimate uses the recorded feedback to represent the strategy's expected future success. The controller can choose between strategies such as cautious splitting of work and generation that balances the available context, while staying within the set of permitted prompts.
 
 \begin{figure*}[htbp]
 \centering
 \begin{subfigure}[t]{0.93\textwidth}
 \centering
 \includegraphics[width=\linewidth]{fig_agentic_module_story_issue_enhancer.png}
-\caption{Agentic module 1: story/issue enhancer.}
+\caption{Agent module 1: improving stories and issues.}
 \label{fig:module-story-issue}
 \end{subfigure}
 \par\medskip
 \begin{subfigure}[t]{0.93\textwidth}
 \centering
 \includegraphics[width=\linewidth]{fig_agentic_module_epic_breaker.png}
-\caption{Agentic module 2: epic breaker into stories.}
+\caption{Agent module 2: splitting epics into stories.}
 \label{fig:module-epic-breaker}
 \end{subfigure}
 
-\caption{Modular agent architecture: story/issue enhancement, epic-to-story decomposition, prompt-pack creation, and RL-based policy control. The panels expose agent boundaries hidden in the top-level architecture. Panels (c) and (d) continue on the next figure page.}
+\caption{The four agent modules: improving stories and issues, splitting epics into stories, creating prompts, and selecting prompts through RL. These panels show the separate responsibilities within the overall system. Panels (c) and (d) continue on the next figure page.}
 \label{fig:agentic-module-architecture}
 \end{figure*}
 
@@ -141,75 +143,74 @@ Figure~\ref{fig:agentic-module-architecture} demonstrates four agentic capabilit
 \begin{subfigure}[t]{0.93\textwidth}
 \centering
 \includegraphics[width=\linewidth]{fig_agentic_module_prompt_generator.png}
-\caption{Agentic module 3: prompt generator.}
+\caption{Agent module 3: creating prompts.}
 \label{fig:module-prompt-generator}
 \end{subfigure}
 \par\medskip
 \begin{subfigure}[t]{0.93\textwidth}
 \centering
 \includegraphics[width=\linewidth]{fig_agentic_module_rl_controller.png}
-\caption{Agentic module 4: RL controller.}
+\caption{Agent module 4: RL controller.}
 \label{fig:module-rl-controller}
 \end{subfigure}
-\caption{Modular agent architecture (continued): prompt-pack creation and RL-based policy control.}
-\Description{Four-panel modular architecture figure showing story issue enhancement, epic-to-story decomposition, prompt generation, and reinforcement-learning controller modules.}
+\caption{Agent modules (continued): creating prompts and selecting prompts through RL.}
+\Description{Four-panel figure showing modules for improving stories and issues, splitting epics into stories, creating prompts, and selecting prompts through reinforcement learning.}
 
 \end{figure*}
 \FloatBarrier
 % END preserved module_architecture.tex body
 
 \FloatBarrier
-\section{Traceable Data Records}
-Every run captures scope, requester, time stamps, and idempotency information along with item state, confidence, readiness, policy flags, structured drafts, references to external evidence, decisions and notes on approval, and before/after writeback hashes. Since each piece of information is a first class record, the planning decision behind it may be subsequently reconstructed for empirical evaluation~\citep{R70,R54}, auditing~\citep{R93}, or incident analysis. Immutable event streams maintain event ordering, whereas mutable snapshots facilitate low-latency querying. Informational warnings alert about non-critical deficiencies, advisory warnings bring problems to reviewer attention, and blocking warnings stop mutation until the issue gets fixed.
+\section{Records that explain each decision}
+Each run records what it covers, who requested it, its time stamps, and the information used to prevent repeated writes. For each item, it also records the current state, confidence and readiness scores, policy flags, draft fields, evidence links, approval decisions and notes, and hashes before and after writeback. Keeping these records allows researchers to trace a planning decision for evaluation~\citep{R70,R54}, audit~\citep{R93}, or investigation of a problem.
 
+The event history is not overwritten, so earlier events remain in order. A separate record of the current state can be updated for fast searches. Informational warnings describe small gaps. Advisory warnings draw the reviewer's attention to a problem. Blocking warnings prevent changes to Jira until the problem is fixed.
 
 \FloatBarrier
-\section{Epic-to-Story Decomposition Method}
+\section{How an epic is split into stories}
 
-
-\subsection{Candidate Generation}
-By leveraging epic context and previous stories, the system can produce any required capability archetypes:
+\subsection{Drafting candidate stories}
+The system uses the epic description and existing stories to identify work that is still needed. It can propose stories for:
 \begin{itemize}
-  \item UI/interaction story,
-  \item API/contract story,
-  \item persistence/writeback story,
-  \item validation/regression story.
+  \item the user interface and user interactions,
+  \item APIs and the rules for exchanging data,
+  \item storing data and writing approved changes,
+  \item checking results and testing whether changes break existing behavior.
 \end{itemize}
 
-This system rejects the archetypes that are already covered in existing summaries via lexical and semantic matching.
+It compares both the words and the meaning of existing summaries. It skips types of stories whose work is already covered. This helps avoid creating tickets that describe the same work in different words.
 
-This helps avoid the common error of ``story inflation,'' where assistants create tickets that differ in wording but cover the same work.
+The system also treats design information written directly in an epic as evidence. This can include design headings, scaling plans, formulas, APIs, workflows, checks, rollback plans, and tests. It records this evidence as \texttt{jira\_embedded\_context}. When a linked Confluence page is unavailable, the system can still plan within the information supplied by the epic itself. If the epic contains only links and those links cannot be opened, it reports that the needed context is unavailable and does not create placeholder stories.
 
-In the current implementation, the system recognizes any embedded epic description as a first-class piece of evidence. When an epic is filled with design signals such as solution-design headings, scaling, formulas, APIs and workflows, validation, roll-back considerations, and testing considerations, the system will output a \texttt{jira\_embedded\_context} piece of evidence. This makes the decomposition resilient to the common enterprise challenge where Confluence links are unavailable at the time of execution, while the epic still contains enough design information for bounded planning. In case when the epic has only links and those links are not available, the system avoids the generation of any placeholders and returns the context unavailability message.
-
-\subsection{Story Point Assignment}
-Initial estimates are derived from complexity priors:
+\subsection{Assigning story points}
+Story points are rough estimates of the work involved in a story. The starting estimate uses assumptions about its complexity:
 \begin{equation}
 \mathrm{SP}(s) = f(\xi_{\text{scope}}, \xi_{\text{integration}}, \xi_{\text{risk}}, \xi_{\text{unknown}}),
 \end{equation}
-with the four $\xi$ factors representing normalized priors for the complexity of scope, integration, risk, and uncertainty. The resulting measure is categorized using Fibonacci-like buckets of 3, 5, and 8. In the current implementation, the default values are deterministic (3/5) and may be learned in future implementations.
+The four $\xi$ terms are starting estimates for scope, connections to other systems, risk, and uncertainty, expressed on a common scale. The size categories are 3, 5, and 8 story points. The current implementation uses fixed defaults (3/5); learning these estimates from past work is left for future versions.
 
-Deterministic baseline is an intended choice. It guarantees consistent behavior in initial phases of use and avoids estimation variability until there is enough history to learn from. It also represents a conservative approach to evaluation whereby the value brought in by automation is compared with deterministic baseline performance before applying any other estimation techniques.
+Fixed defaults give consistent starting estimates. They avoid changes caused by a learned estimation method before enough past data are available. They provide a consistent baseline for evaluating automation before other estimation methods are introduced.
 
-\subsection{Iterative Enrichment}
+\subsection{Reviewing and improving each draft}
 For each candidate story $s$:
 \begin{enumerate}
-  \item run semantic analysis,
-  \item calculate readiness/confidence,
-  \item if $C(s)<\tau_c$, provide guidance and repeat the enrichment process within a bounded attempt budget,
-  \item provide a structured story payload.
+  \item check the meaning of the story,
+  \item calculate its readiness and confidence scores,
+  \item if $C(s)<\tau_c$, provide guidance and revise the story, up to the allowed number of attempts,
+  \item return the story in the required data format.
 \end{enumerate}
+Here, $C(s)$ is the story's confidence score and $\tau_c$ is the required threshold. Reviewers can guide each revision by pointing out missed cases, unresolved dependencies, or unclear requirements about how the system should operate. These exchanges make revision a joint process between the reviewer and the AI \citep{R56,R57}.
 
-Enrichment increases as each iteration brings explicit feedback from reviewers, such as missed edge cases, unresolved dependencies, or ambiguous non-functional requirements. Thus, the refinement process becomes a collaboration, not just prompting. The distinction is important for successful interaction between human and AI \citep{R56,R57}.
-
-Moreover, in one embodiment, the output of the enrichment process follows a canonical, strongly typed schema:
+In one version of the design, every draft follows the same set of fields, with a defined data type for each:
 \texttt{problem\_statement}, \texttt{actor\_value}, \texttt{functional\_scope}, \texttt{nfr\_constraints}, \texttt{acceptance\_criteria},
-\texttt{dependency\_map}, \texttt{risk\_register}, and \texttt{test\_considerations}. The high degree of typing ensures interoperability of the result with tools for reviews, analytics, and policies and removes ambiguity caused by the informal nature of the free-form text.
+\texttt{dependency\_map}, \texttt{risk\_register}, and \texttt{test\_considerations}. These fields describe the problem, the user's benefit, the planned functions, operating constraints, conditions for acceptance, dependencies, risks, and tests. A shared format helps review, analysis, and policy-checking tools read the same information without having to interpret free-form text.
 
-An analysis of coverage on the epic level can be done through the capability matrix. Its rows correspond to the capability dimensions such as UI, API, data, observability, resiliency, and security, while its columns represent the suggested stories. The system is able to detect undercovered dimensions and generate candidate stories accordingly. It alters the decomposition process from merely generative to constrained generation with clear objectives.
+The system can also use a coverage table to check the epic as a whole. Each column is a proposed story. The rows cover the user interface, APIs, data, understanding system behavior, handling and recovering from failures, and security. Gaps in this table identify areas that need more work, so the system can propose stories for those areas.
 
-\subsection{Ablation Execution Algorithm}
-Algorithm~\ref{alg:ablation-exec} specifies the execution-mode schema and common scorecard for the four baseline definitions. Each mode activates its listed components and returns quality, efficiency, governance, composite, and assessment-time fields.
+\subsection{Steps for comparing the methods}
+Algorithm~\ref{alg:ablation-exec} describes which components are used for each of the four method definitions. This is called an ablation comparison: components can be left out to define a simpler method. The steps use a shared scorecard with fields for quality, efficiency, governance, the combined score, and assessment time. B0 requires an independently prepared manual package. The other modes run the template method, the one-shot language model, or the complete Jira Enhancer workflow. Each result keeps its status as a measured result or a result of the scoring analysis.
+
+In the algorithm, the critic loop checks drafts and suggests revisions. The context packer selects and arranges source information. A validator checks the required fields and conditions. Governed writeback saves approved changes only after the workflow checks pass.
 
 \begin{algorithm*}[H]
 \DontPrintSemicolon
@@ -243,18 +244,18 @@ Compute $Q_m$ (quality), $\mathrm{Eff}_m$ (efficiency), $G_m$ (governance), $\ma
 \appendix
 \setcounter{table}{5}
 \renewcommand{\thetable}{\thesection.\arabic{table}}
-\section{Scoring Model Sanity Checks under Deterministic Perturbation}\label{sec:stress-testing}
-Table~\ref{tab:scoring-sanity-checks} summarizes the formula-generated profiles for the internal and public-input checks. The internal check applies seeded perturbations to reused runtime-derived inputs; the public-input check applies the same formulas to 300 SWE-bench Lite issue texts~\citep{R26}. B0--B3 identify scoring profiles in this table. Their composite uses weights of 0.45 for quality, 0.30 for efficiency, and 0.25 for governance on a 0--100 scale. These rows check the scoring implementation and are separate from the executed baseline comparison in Section~5.3 of the main manuscript.
+\section{Checking the Scoring Formulas with Repeatable Input Changes}\label{sec:stress-testing}
+Table~\ref{tab:scoring-sanity-checks} shows scores calculated from formulas for two checks. The internal check reuses inputs derived from earlier system runs and changes them in repeatable ways using fixed random seeds (seeded perturbations). The public-input check applies the same formulas to 300 SWE-bench Lite issue texts~\citep{R26}. B0--B3 are scoring profiles in this table. Their composite, or combined score, is a weighted mean: quality, efficiency, and governance contribute weights of 0.45, 0.30, and 0.25, respectively, on a 0--100 scale. The weights determine how much each component contributes to the combined score. These rows check how the scoring formulas are implemented. They are separate from the results of running the baseline methods in Section~5.3 of the main manuscript.
 
 \begin{table*}[htbp]
 \centering
 \setlength{\tabcolsep}{3pt}
 \small
-\caption{Scoring model sanity checks under deterministic perturbation. All entries are formula-derived means.}
+\caption{Checks of the scoring formulas using repeatable input changes. The reported scores are means calculated from formulas.}
 \label{tab:scoring-sanity-checks}
 \begin{tabular}{@{}llrrrrr@{}}
 \toprule
-Input & Profile & Rows & Quality & Efficiency & Governance & Composite \\
+Input & Scoring profile & Rows & Quality & Efficiency & Governance & Combined score \\
 \midrule
 Seeded internal units & B0 & 5,000 & 60.17 & 30.28 & 35.18 & 44.96 \\
  & B1 & 5,000 & 59.66 & 47.01 & 36.45 & 50.06 \\
@@ -273,20 +274,20 @@ Public issue text & B0 & 300 & 60.39 & 30.62 & 35.21 & 45.16 \\
 
 
 \clearpage
-\section{Sensitivity to Uniform Requirement-Dimension Weights}\label{sec:weight-sensitivity}
-We evaluated one fixed alternative to the priority weights: the arithmetic mean of all seven requirement dimensions, with each weight set to exactly $1/7$ (approximately 14.286\%). The analysis uses the same corrected ratings from all 40 reviewers. It excludes the 160 masked-repeat ratings and averages the 1,680 primary ratings within each epic--method cell. The 14 matched epics remain the units of inference. No weight search or additional generation experiment was performed.
+\section{Checking Whether Equal Weights Change the Comparison}\label{sec:weight-sensitivity}
+We tested one fixed alternative to the priority weights: give all seven requirement dimensions equal weight. These uniform weights produce the arithmetic mean, or ordinary average: add the seven ratings and divide by seven. Each weight is exactly $1/7$ (approximately 14.286\%). The analysis uses the same corrected ratings from all 40 reviewers. It excludes the 160 masked-repeat ratings, which came from repeat assessments that were not marked as repeats. It averages the 1,680 primary ratings separately for each combination of epic and method. The 14 matched epics remain the units of inference: each epic is one case in the statistical comparison, with the methods compared on that same epic. We did not search for other weights or run an additional generation experiment.
 
-For each B3--baseline contrast, we enumerated all $2^{14}$ sign assignments for the two-sided paired test and used 100,000 paired epic-bootstrap resamples for percentile confidence intervals. The bootstrap seeds were 20261313 for B3--B2 and 20261314 for B3--B1, with identical resampling under both weight schemes. Holm adjustment covers the two contrasts within each scheme. As an additional multiplicity check, treating all four weighting--contrast tests as one family gives $p_{\mathrm{Holm}}=0.000488$ for every contrast.
+For each B3--baseline comparison, we used an exact two-sided paired sign-flip test. It checks all $2^{14}$ ways of assigning signs to the paired epic differences to assess evidence for a difference in either direction. We also used 100,000 paired epic-bootstrap resamples to obtain percentile confidence intervals. This procedure draws whole epics with replacement, so an epic can appear more than once in a resample. It repeats the calculation while keeping the methods for each epic together. The intervals describe uncertainty in the estimated difference. The bootstrap seeds were 20261313 for B3--B2 and 20261314 for B3--B1, with identical resampling under both weight schemes. Holm adjustment reduces the risk of false-positive conclusions when several comparisons are tested. In the reported results, it covers the two contrasts within each weighting scheme. As an additional check for multiple testing, treating all four weighting--contrast tests as one family gives $p_{\mathrm{Holm}}=0.000488$ for every contrast.
 
 \begin{table*}[htbp]
 \centering
 \footnotesize
 \setlength{\tabcolsep}{3pt}
-\caption{Sensitivity of the matched requirement-quality comparison to dimension weights. Scores retain the 1--5 scale. Intervals resample 14 paired epics; the reported Holm adjustment covers the two contrasts within each weighting scheme.}
+\caption{Comparison of requirement-quality scores under the two weighting schemes. Scores retain the 1--5 scale. Confidence intervals are calculated by resampling 14 matched epics; the reported Holm adjustment covers the two contrasts within each weighting scheme.}
 \label{tab:weight-sensitivity}
 \begin{tabularx}{\textwidth}{@{}ll>{\centering\arraybackslash}Xrr@{}}
 \toprule
-Weights & Contrast & Difference [95\% CI] & Holm $p$ & Positive epics \\
+Weights & Comparison & Mean difference [95\% CI] & Holm $p$ & Epics favoring B3 \\
 \midrule
 Priority & B3--B2 & 0.542 [0.509, 0.573] & 0.000244 & 14/14 \\
 Priority & B3--B1 & 1.592 [1.205, 1.984] & 0.000244 & 14/14 \\
@@ -296,40 +297,42 @@ Uniform & B3--B1 & 1.547 [1.210, 1.873] & 0.000244 & 14/14 \\
 \end{tabularx}
 \end{table*}
 
-The uniform-weight means are 2.737, 3.724, and 4.283 for B1, B2, and B3, respectively. Table~\ref{tab:weight-sensitivity} shows positive contrasts on every epic under either specified weighting. This finding shows that the direction of comparison in the corrected dataset does not depend on the selected priority vector. It does not independently validate the rating corrections or establish stability on new portfolios.
+The mean scores under uniform weights are 2.737, 3.724, and 4.283 for B1, B2, and B3, respectively. Table~\ref{tab:weight-sensitivity} shows that B3 scores higher than each baseline on every epic under both tested weighting schemes. The direction of the comparison in this corrected dataset therefore does not depend on using the selected priority weights. This repeat analysis does not independently check whether the rating corrections are accurate or show that the results remain stable on new portfolios.
 
 
 \FloatBarrier
 
 \clearpage
-\subsection*{Matched-review radar plot}
+\subsection*{Radar Plot of Reviewer Ratings}
 \phantomsection
-\addcontentsline{toc}{subsection}{Matched-review radar plot}
+\addcontentsline{toc}{subsection}{Radar Plot of Reviewer Ratings}
 \begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{../patent/reviewer_study/public_results/matched_review_weighted_radar.pdf}
-\caption{Human-rated requirement quality for B1 (template baseline), B2 (one-shot drafting), and B3 (Jira Enhancer). The radar shows mean ratings for seven requirement dimensions on the anchored 1--5 scale. Percentages beside the axes are the weights used for the priority composite shown on the right; the radar points show the dimension means before weighting.}
+\caption{Reviewer ratings of requirement quality for B1 (template baseline), B2 (one-shot drafting), and B3 (Jira Enhancer). Each spoke of the radar plot shows the mean rating for a requirement dimension on the anchored 1--5 scale, whose scores have defined descriptions. There are seven dimensions. The percentages beside the axes give the weights used to calculate the priority composite, or combined score, on the right. The plotted points show the dimension means before weighting.}
 \label{fig:supp-matched-review-radar}
 \end{figure}
 
-\paragraph{Study and interpretation.}
-The figure uses the corrected matched-review data from 40 reviewers and 14 epic packages per method, giving 560 primary package ratings for each method. The 160 masked-repeat ratings are excluded. B3 uses RL-guided prompt selection and bounded refinement. It has higher mean ratings on all seven dimensions. Implementation readiness receives 40\% of the composite weight; dependencies and risks and granularity and actionability receive 20\% each; the other four dimensions receive 5\% each.
+\paragraph{Data shown in the figure.}
+The figure uses the corrected matched-review data from 40 reviewers and 14 epic packages per method, giving 560 primary package ratings for each method. The 160 masked-repeat ratings are excluded. B3 uses RL-guided prompt selection and refines drafts within a set limit on attempts. It has higher mean ratings on all seven dimensions. Implementation readiness receives 40\% of the composite weight; dependencies and risks and granularity and actionability receive 20\% each; the other four dimensions receive 5\% each.
 
-The priority-weighted means are 2.56 for B1, 3.61 for B2, and 4.15 for B3. The B3--B2 paired difference is +0.54 points, with a 95\% epic-bootstrap confidence interval of [0.51, 0.57] and Holm-adjusted exact paired sign-flip $p=0.000244$. The 14 matched epics are the units of inference, and the Holm adjustment covers the two declared baseline contrasts. These are the same results reported in Section 5.3 of the main manuscript. The equal-weight comparison is also reported there and in Supplementary Appendix~\ref{sec:weight-sensitivity}.
+The priority-weighted mean scores are 2.56 for B1, 3.61 for B2, and 4.15 for B3. The B3--B2 paired difference is +0.54 points, with a 95\% epic-bootstrap confidence interval of [0.51, 0.57] and Holm-adjusted exact paired sign-flip $p=0.000244$. The 14 matched epics are the cases used for statistical inference, and the Holm adjustment covers the two declared baseline contrasts. These are the same results reported in Section 5.3 of the main manuscript. The equal-weight comparison is also reported there and in Supplementary Appendix~\ref{sec:weight-sensitivity}.
 
-\paragraph{Data and reproduction.}
-The original graphic is retained unchanged. Its inputs are the public \href{https://github.com/anonymous94u/JiraEnhancer/blob/main/patent/reviewer_study/public_results/matched_review_quality_factor_comparison.csv}{dimension means and weights}, \href{https://github.com/anonymous94u/JiraEnhancer/blob/main/patent/reviewer_study/public_results/matched_review_method_summary.csv}{method summaries}, and \href{https://github.com/anonymous94u/JiraEnhancer/blob/main/patent/reviewer_study/public_results/matched_review_pairwise.csv}{paired comparisons}. The \href{https://github.com/anonymous94u/JiraEnhancer/blob/main/patent/reviewer_study/plot_weighted_review_radar.py}{plotting script} and \href{https://github.com/anonymous94u/JiraEnhancer/blob/main/patent/reviewer_study/public_results/matched_review_weighted_radar.pdf}{original vector PDF} are available in the same repository.
+\paragraph{Data and how to reproduce the plot.}
+The original graphic is unchanged. It uses the public \href{https://github.com/anonymous94u/JiraEnhancer/blob/main/patent/reviewer_study/public_results/matched_review_quality_factor_comparison.csv}{dimension means and weights}, \href{https://github.com/anonymous94u/JiraEnhancer/blob/main/patent/reviewer_study/public_results/matched_review_method_summary.csv}{method summaries}, and \href{https://github.com/anonymous94u/JiraEnhancer/blob/main/patent/reviewer_study/public_results/matched_review_pairwise.csv}{paired comparisons}. The \href{https://github.com/anonymous94u/JiraEnhancer/blob/main/patent/reviewer_study/plot_weighted_review_radar.py}{plotting script} and \href{https://github.com/anonymous94u/JiraEnhancer/blob/main/patent/reviewer_study/public_results/matched_review_weighted_radar.pdf}{original vector PDF} are available in the same repository.
 
 \FloatBarrier
 \clearpage
-\section{Scenario-Level Transaction Outcomes}\label{sec:fault-scenario-matrix}
-Table~\ref{tab:fault-scenario-matrix} expands the aggregate transaction results in Table~5b of the main manuscript. Each scenario--arrangement cell contains 2,000 observations. With random seed 20260726, the same shuffled schedule of 18,000 transactions is evaluated under each arrangement, giving 72,000 method-level observations. The valid-control and two retry scenarios provide 6,000 eligible-write observations per arrangement. The other six scenarios provide 12,000 conflicting-state observations per arrangement.
+\section{Update Test Results by Scenario}\label{sec:fault-scenario-matrix}
+Table~\ref{tab:fault-scenario-matrix} gives the results for each test scenario behind Table~5b of the main manuscript. A transaction is one intended update to Jira, including any retry attempts. Each scenario has 2,000 observations for each configuration. Random seed 20260726 sets the shuffled order of 18,000 transactions. All configurations use this same order, giving 72,000 observations in total. The valid-control scenario and two retry scenarios provide 6,000 transactions that are eligible for an update in each configuration. The other six scenarios provide 12,000 transactions where the reviewed state has changed.
+
+A stale update uses approval for an earlier state that is no longer valid. In the source ABA scenario, the source changes and then returns to the same text. A content hash, or digital fingerprint, can miss this change because the final text is unchanged. Draft, policy, and target drift mean that the draft, rules, or update destination changed after review. A response-loss retry repeats a request after the caller does not receive confirmation of the first attempt.
 
 \begin{table*}[htbp]
 \centering
 \footnotesize
 \setlength{\tabcolsep}{3pt}
-\caption{Complete scenario-level transaction matrix. Each cell reports $(m,s,d)$: mean modeled mutations per transaction, stale-mutation flag, and duplicate-mutation flag. The latter two entries are 0 or 1 because their rates are 0\% or 100\% in every cell.}
+\caption{Results for every update test scenario. Each cell reports $(m,s,d)$: the mean number of modeled updates per transaction, whether an update used stale approval, and whether an update was repeated. The last two entries are 0 or 1 because their rates are 0\% or 100\% in every cell.}
 \label{tab:fault-scenario-matrix}
 \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X*{4}{>{\centering\arraybackslash}p{0.13\textwidth}}@{}}
 \toprule
@@ -348,24 +351,30 @@ Combined source/draft drift & $(2,1,1)$ & $(0,0,0)$ & $(0,0,0)$ & $(0,0,0)$ \\
 \end{tabularx}
 \end{table*}
 
-A0 uses ordinary approval and logging; A1 adds a source-hash check; A2 adds atomic-idempotency behavior; A3 adds the source-bound transaction envelope. The executable harness calls the implementation's A3 envelope builder and validator. It models the resulting mutation count as zero when blocked, one for an allowed A2/A3 transaction, and the attempt count for an allowed A0/A1 transaction. Thus, the matrix measures validator behavior coupled to declared mutation semantics, rather than observed remote Jira writes. The concurrent-retry scenario is represented by two attempts; the harness does not execute concurrent requests. Seven separate workflow tests exercise the mock connector, including completed-write retries and recovery after a lost commit response. These tests complement the scenario matrix without establishing production fault frequencies or concurrent-load performance.
+A0 uses ordinary approval and a log. A1 also checks the source hash. A2 adds atomic idempotency, which prevents repeated requests from repeating the update. A3 adds a transaction envelope, a record that links approval to the reviewed source version, draft, rules, and allowed update targets.
+
+The test program calls the implemented A3 envelope builder and validator. It counts modeled updates as zero for a blocked transaction, one for an allowed A2/A3 transaction, and the number of attempts for an allowed A0/A1 transaction. These are modeled counts based on the validation results and the stated update rules. They are not observations of actual remote Jira updates.
+
+The concurrent-retry scenario contains two attempts. The program does not send parallel network requests. Seven separate workflow tests use a mock connector, which stands in for the remote service. They include retries after completed updates and recovery when a commit response is lost. These tests do not measure how often failures occur in production or how the system performs under concurrent load.
 
 % Insertion draft: place after Appendix C and before backmatter/bibliography.
 % No issue keys, internal URLs, pod names, or subscription identifiers are included.
-\section{Downstream Rebalancing Implementation Case}\label{sec:downstream-rebalancing-case}
+\section{Implementation Case: Moving Subscriptions Between Service Instances}\label{sec:downstream-rebalancing-case}
 
-\subsection{Case provenance and staged binding distribution}
-The author identifies one Jira Enhancer-derived enhancement spanning three implementation stories: the subscriber service, Java SDK, and Python SDK. The execution evidence below covers the subscriber service and Python SDK. The companion story-case manifest maps the three components to the corresponding execution evidence.
+\subsection{Case origin and subscription placement}
+The author identifies this enhancement as work derived from Jira Enhancer. It spans three implementation stories: the subscriber service, Java SDK, and Python SDK. An SDK is a software development kit that client programs use to work with the service. The run records below cover the subscriber service and Python SDK. The companion story-case manifest lists the components and their supporting records. The Jira Enhancer origin is the author's attribution; the run records do not independently establish that origin.
 
-The recovered execution archives contain pooling-enabled and pooling-disabled runs from 15 October 2026 in the development cloud cell. An independent artifact check recomputed all 19 declared file hashes in each archive and inspected the raw observations, stage snapshots, and handoff sequences.
+The saved run archives contain tests from 15 October 2026 in a development cloud environment. One run had the pooling option enabled and the other had it disabled. An independent check recalculated all 19 listed file hashes in each archive. It also inspected the recorded observations, snapshots after each stage, and records of transfers between service instances. This check verified saved files and records; it did not rerun the tests.
 
-Each run used five persistent Python clients with 100, 200, 500, 1,000, and 1,500 subscriptions, respectively: 3,300 client--subscription bindings across 1,500 distinct logical subscription identifiers. Pods were manually scaled from one to two, three, and four. Every observed scale-out stage met the 420-second minimum hold. Table~\ref{tab:downstream-binding-distribution} reports final ready-binding snapshots. Pod aliases denote creation order separately within each run.
+Each run kept five Python client programs active, with 100, 200, 500, 1,000, and 1,500 subscriptions, respectively. A subscription requests events from the service. A client--subscription binding links a client to a subscription. The runs had 3,300 such bindings across 1,500 distinct logical subscription identifiers; different clients could use the same subscription identifier.
+
+A pod is a running instance of the service. The pod count was increased manually from one to two, three, and four. At each observed stage after increasing the pod count, the clients remained active for at least the required 420-second hold. Table~\ref{tab:downstream-binding-distribution} shows the ready bindings at the end of each stage. Pod labels follow creation order within each run and do not identify the same pod across runs.
 
 \begin{table*}[htbp]
 \centering
 \footnotesize
 \setlength{\tabcolsep}{3pt}
-\caption{Ready client--subscription bindings and minimum worker hold after each manual scale-out stage. Each row totals 3,300 bindings; a dash indicates that the pod had not yet been created. The required minimum hold was 420 seconds.}
+\caption{Ready client--subscription bindings after each manual increase in pod count. Hold is the shortest time a client remained active in that stage. Each row totals 3,300 bindings; a dash means that the pod had not yet been created. The required minimum hold was 420 seconds.}
 \label{tab:downstream-binding-distribution}
 \begin{tabular}{@{}lrrrrrr@{}}
 \toprule
@@ -382,13 +391,15 @@ Disabled & 4 & 500 & 1,500 & 1,000 & 300 & 439.3 \\
 \end{tabular}
 \end{table*}
 
-\subsection{Handoff records, telemetry, and interpretation}
-Table~\ref{tab:downstream-handoff-telemetry} summarizes the execution records. Completed handoffs recorded these phases: \texttt{handshake}, \texttt{promote}, \texttt{ready}, \texttt{commit}, \texttt{quiesce}, \texttt{drain}, \texttt{retire\_\allowbreak{}authorized}, and \texttt{retire}. The checks correlate committed target ownership with same-session subscription receipts and source \texttt{DRAINED} and \texttt{RETIRED} wire responses. The enabled archive contains 14 complete sequences (112 phase records), and the disabled archive contains six (48 records), with no additional incomplete sequence in the inspected handoff observations. Five disabled-run handoffs targeted newly created pods; these account for 2,900 of its 3,000 cumulative binding moves. Movement counts sum bindings transferred across handoffs.
+\subsection{Transfer records, status messages, and findings}
+A handoff transfers responsibility for subscriptions from one service instance to another. Table~\ref{tab:downstream-handoff-telemetry} summarizes these transfers and the status messages recorded during the runs. Completed handoffs recorded these phases: \texttt{handshake}, \texttt{promote}, \texttt{ready}, \texttt{commit}, \texttt{quiesce}, \texttt{drain}, \texttt{retire\_\allowbreak{}authorized}, and \texttt{retire}. These are the phase names used in the logs.
+
+The checks linked the recorded transfer of ownership to subscription receipts from the same session and to \texttt{DRAINED} and \texttt{RETIRED} responses from the original service instance. The enabled archive contains 14 complete sequences (112 phase records). The disabled archive contains six (48 records). No additional incomplete sequence was found in the inspected handoff records. Five handoffs in the disabled run moved bindings to newly created pods. They account for 2,900 of that run's 3,000 binding moves. These totals count each transfer, so a binding moved more than once contributes more than once.
 
 \begin{table*}[htbp]
 \centering
 \small
-\caption{Descriptive execution and non-probe MainStats telemetry from the retained runs. Cadence is measured between consecutive frames within the same client, physical connection, and session.}
+\caption{Transfer records and MainStats status messages from the saved runs. Probe messages are excluded. Time intervals are measured between successive messages from the same client, physical connection, and session.}
 \label{tab:downstream-handoff-telemetry}
 \begin{tabularx}{\textwidth}{@{}Xrr@{}}
 \toprule
@@ -396,9 +407,9 @@ Recorded quantity & Enabled & Disabled \\
 \midrule
 Complete handoffs / phase records & 14 / 112 & 6 / 48 \\
 Cumulative binding moves & 3,070 & 3,000 \\
-Non-probe MainStats frames & 2,476 & 933 \\
+MainStats messages, excluding probes & 2,476 & 933 \\
 Connection--session groups & 27 & 11 \\
-Within-group arrival intervals & 2,449 & 922 \\
+Message intervals within each group & 2,449 & 922 \\
 Median interval (seconds) & 10.000391 & 10.000380 \\
 Maximum interval (seconds) & 10.205 & 10.208 \\
 Intervals above 11 seconds & 0 & 0 \\
@@ -407,9 +418,9 @@ Business events / ACKs / NACKs & 0 / 0 / 0 & 0 / 0 / 0 \\
 \end{tabularx}
 \end{table*}
 
-All five Python workers exited with status zero in each run. The records verify subscription placement and receipt-gated handoffs. MainStats intervals measure telemetry cadence.
+All five Python workers exited with status zero, indicating successful completion, in each run. The records verify subscription placement and handoffs that require subscription receipts before proceeding. MainStats is the name of the recorded status messages. The intervals show how regularly those messages arrived. ACKs confirm successful handling of a message; NACKs report a failure to handle it. No business events, ACKs, or NACKs were recorded, so these runs do not test business-event delivery.
 
-The archived stage snapshots, completed handoff sequences, and successful worker exits demonstrate downstream execution feasibility for this rebalancing enhancement.
+The saved snapshots, completed handoff sequences, and successful worker exits show that this rebalancing enhancement could run in the tested development setting. The records cover subscription placement and transfer, not production reliability or a comparison of planning methods.
 
 \FloatBarrier
 
