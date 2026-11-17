@@ -80,6 +80,7 @@ TEST_FILES = (
 )
 EVIDENCE_FILES = {
     "supplementary": (
+        "supplementary_material.tex", "supplementary_material.pdf",
         "README.md", "additional_methods.tex", "additional_methods.pdf",
         "matched_review_radar.tex", "matched_review_radar.pdf",
         "appendices_a_b.tex", "appendices_a_b.pdf",

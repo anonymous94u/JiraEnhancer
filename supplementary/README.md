@@ -1,21 +1,25 @@
-# Supplementary material
+# Supplementary appendix
 
-| Material | Contents | Files |
-|---|---|---|
-| Additional methods | Related-work comparison, detailed workflow and recovery behavior, record fields, and the decomposition procedure with Algorithm S1. | [PDF](additional_methods.pdf) · [LaTeX](additional_methods.tex) |
-| Appendices A and B | Scoring-model checks for internal and public issue text, followed by the detailed equal-weight sensitivity analysis. | [PDF](appendices_a_b.pdf) · [LaTeX](appendices_a_b.tex) |
-| Matched-review radar plot | Supplementary Figure S2 shows the seven human-rated dimensions and priority-weighted composites, with the sample, weights, paired comparison, and links to the data and plotting script. | [PDF](matched_review_radar.pdf) · [LaTeX](matched_review_radar.tex) |
-| Module architecture | Four diagrams show story enhancement, epic-to-story decomposition, prompt generation, and the RL controller, with the original explanation. | [PDF](module_architecture.pdf) · [LaTeX](module_architecture.tex) |
-| Appendices C and D | The scenario-level transaction matrix and the downstream rebalancing case, including binding distributions, handoff records, and runtime telemetry. | [PDF](appendices_c_d.pdf) · [LaTeX](appendices_c_d.tex) |
+[**Download the complete supplementary appendix (PDF)**](https://github.com/anonymous94u/JiraEnhancer/raw/refs/heads/main/supplementary/supplementary_material.pdf)
 
-The moved text, numerical values, table contents, and diagram images are retained. Cross-references are updated for the separate documents. Tables A.6 and B.7 follow the main paper's five tables; Tables C.8, D.9, and D.10 continue this numbering. Table 5b refers to the main paper's mutation-safety panel. Table S1 and Algorithm S1 belong to the additional methods. The module diagram is Supplementary Figure S1; the matched-review radar plot is Supplementary Figure S2.
+One document contains the supplementary methods, Appendices A–D, and Figures S1–S2. Its contents and bookmarks provide navigation within the PDF.
 
-To rebuild from this directory with a LaTeX installation:
+| Part | Contents |
+|---|---|
+| Supplementary Methods, Sections 1–5 | Related-work comparison (Table S1), workflow and recovery, architecture, record fields, and decomposition procedure (Algorithm S1) |
+| Supplementary Figure S1 | The four internal modules, within Methods Section 3 |
+| Appendix A | Scoring-model checks (Table A.6) |
+| Appendix B | Equal-weight sensitivity analysis (Table B.7) and matched-review radar plot (Figure S2) |
+| Appendix C | Scenario-level transaction matrix (Table C.8) |
+| Appendix D | Downstream rebalancing case, binding distributions, handoff records, and runtime telemetry (Tables D.9–D.10) |
+| References | References cited in the supplement |
+
+The appendix letters and supplementary labels match the main manuscript. The content and numerical results are retained from the earlier component documents.
+
+[Editable LaTeX source](supplementary_material.tex)
+
+To compile the combined source from this directory:
 
 ```sh
-latexmk -pdf -interaction=nonstopmode -halt-on-error matched_review_radar.tex
-latexmk -pdf -interaction=nonstopmode -halt-on-error additional_methods.tex
-latexmk -pdf -interaction=nonstopmode -halt-on-error appendices_a_b.tex
-latexmk -pdf -interaction=nonstopmode -halt-on-error module_architecture.tex
-latexmk -pdf -interaction=nonstopmode -halt-on-error appendices_c_d.tex
+latexmk -pdf -interaction=nonstopmode -halt-on-error supplementary_material.tex
 ```
